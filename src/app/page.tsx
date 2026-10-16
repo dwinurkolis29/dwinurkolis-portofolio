@@ -1,4 +1,6 @@
+import Image from "next/image";
 import { organisation, yamlSkills } from "@/data/profile";
+import { ProjectShowcase } from "@/features/projects/project-showcase";
 import { getProfileData } from "@/lib/profile-data";
 
 export const revalidate = 60;
@@ -6,7 +8,6 @@ export const revalidate = 60;
 const nav = [
   { href: "#experience", label: "Experience" },
   { href: "#projects", label: "Projects" },
-  { href: "#retrospective", label: "Retrospective" },
   { href: "#stack", label: "Stack" },
   { href: "#education", label: "Education" },
   { href: "#contact", label: "Contact" },
@@ -67,7 +68,7 @@ function Tag({ children }: { children: React.ReactNode }) {
 }
 
 export default async function Home() {
-  const { profile, experience, projects, skills, education, achievements, retrospective } =
+  const { profile, experience, projects, skills, education, achievements } =
     await getProfileData();
   return (
     <>
@@ -156,13 +157,33 @@ export default async function Home() {
             </div>
           </div>
 
-          <div aria-hidden="true" className="relative mx-auto hidden h-[460px] w-full max-w-lg lg:block">
+          <div
+            aria-hidden="true"
+            className="relative mx-auto flex h-[440px] w-full max-w-lg items-center justify-center sm:h-[520px]"
+          >
+            {/* Background Glow & Orbital Rings matching eltrovert.com */}
             <div className="glow absolute inset-0" />
+            <div className="pointer-events-none absolute h-80 w-80 rounded-full border border-accent/15 sm:h-96 sm:w-96" />
+            <div className="pointer-events-none absolute h-64 w-64 rounded-full border border-accent-2/10 sm:h-72 sm:w-72" />
+
+            {/* 3D Human Pilot Illustration */}
+            <div className="float relative z-10 flex h-full w-full items-center justify-center [--rot:0deg]">
+              <Image
+                src="/pilot-hero.png"
+                alt="3D Pilot Character Illustration"
+                width={420}
+                height={560}
+                priority
+                className="h-[380px] w-auto object-contain mix-blend-lighten drop-shadow-[0_20px_40px_rgba(74,222,128,0.18)] sm:h-[470px]"
+              />
+            </div>
+
+            {/* Floating Code Windows around the Pilot */}
             <Window
               title="ProfileViewModel.kt"
-              className="float absolute left-0 top-6 w-72 [--rot:-3deg]"
+              className="float absolute -left-2 top-4 z-20 hidden w-56 [--rot:-3deg] sm:block"
             >
-              <p><span className="text-violet-300">class</span> ProfileViewModel : ViewModel() {"{"}</p>
+              <p><span className="text-violet-300">class</span> PilotVM : ViewModel() {"{"}</p>
               <p className="pl-3"><span className="text-violet-300">val</span> stack = listOf(</p>
               <p className="pl-6 text-accent">&quot;Kotlin&quot;, &quot;Flutter&quot;</p>
               <p className="pl-3">)</p>
@@ -170,20 +191,18 @@ export default async function Home() {
             </Window>
             <Window
               title="knox-policy.json"
-              className="float absolute right-0 top-32 w-64 [--rot:2deg] [animation-delay:-2s]"
+              className="float absolute -right-2 bottom-20 z-20 hidden w-52 [--rot:2deg] [animation-delay:-2s] sm:block"
             >
               <p>{"{"}</p>
               <p className="pl-3"><span className="text-accent-2">&quot;device&quot;</span>: <span className="text-accent">&quot;managed&quot;</span>,</p>
-              <p className="pl-3"><span className="text-accent-2">&quot;apps&quot;</span>: <span className="text-accent">&quot;allowlisted&quot;</span>,</p>
               <p className="pl-3"><span className="text-accent-2">&quot;encrypted&quot;</span>: <span className="text-amber-300">true</span></p>
               <p>{"}"}</p>
             </Window>
             <Window
               title="build.log"
-              className="float absolute bottom-6 left-10 w-72 [--rot:-1deg] [animation-delay:-4s]"
+              className="float absolute bottom-2 left-0 z-20 hidden w-60 [--rot:-1deg] [animation-delay:-4s] sm:block"
             >
               <p className="text-muted">&gt; flutter build apk --release</p>
-              <p className="text-muted">Running Gradle task...</p>
               <p className="text-accent">✓ Built app-release.apk</p>
             </Window>
           </div>
@@ -212,40 +231,7 @@ export default async function Home() {
         </Section>
 
         <Section id="projects" eyebrow="Engineering Spotlight" title="Selected projects">
-          <div className="grid gap-4 md:grid-cols-3">
-            {projects.map((p) => (
-              <article
-                key={p.name}
-                className="flex flex-col rounded-lg border border-border bg-surface p-5 transition-colors hover:border-accent/60"
-              >
-                <p className="font-mono text-xs text-muted">{p.year}</p>
-                <h3 className="mt-1 text-lg font-semibold text-foreground">{p.name}</h3>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-foreground/80">{p.description}</p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {p.tags.map((t) => (
-                    <Tag key={t}>{t}</Tag>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
-        </Section>
-
-        <Section id="retrospective" eyebrow="Yearly Retrospective" title="Tracking progress, year by year">
-          <ol className="space-y-4">
-            {retrospective.map((r) => (
-              <li
-                key={r.year}
-                className="grid gap-2 rounded-lg border border-border bg-surface p-5 sm:grid-cols-[5rem_1fr] sm:gap-6"
-              >
-                <p className="font-mono text-2xl text-accent">{r.year}</p>
-                <div>
-                  <h3 className="font-semibold text-foreground">{r.title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-foreground/80">{r.text}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
+          <ProjectShowcase projects={projects} />
         </Section>
 
         <Section id="stack" eyebrow="Stack" title="Tools I work with">

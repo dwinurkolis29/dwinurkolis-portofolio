@@ -23,13 +23,29 @@ const fallback: ProfileData = {
   source: "local",
 };
 
+const CACHE_TTL_MS = 60_000;
+let cachedResult: { data: ProfileData; expiresAt: number } | null = null;
+
 export async function getProfileData(): Promise<ProfileData> {
+  if (cachedResult && Date.now() < cachedResult.expiresAt) {
+    return cachedResult.data;
+  }
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) return fallback;
 
   try {
-    const db = createClient(url, key, { auth: { persistSession: false } });
+    const db = createClient(url, key, {
+      auth: { persistSession: false },
+      global: {
+        fetch: (input, init) =>
+          fetch(input, {
+            ...init,
+            signal: AbortSignal.timeout(1500),
+          }),
+      },
+    });
     const [profile, experience, projects, skills, education, achievements, retro] =
       await Promise.all([
         db.from("profile").select("*").eq("id", 1).single(),
@@ -44,10 +60,13 @@ export async function getProfileData(): Promise<ProfileData> {
     const failed = [profile, experience, projects, skills, education, achievements, retro].find(
       (r) => r.error || !r.data,
     );
-    if (failed) return fallback;
+    if (failed) {
+      cachedResult = { data: fallback, expiresAt: Date.now() + CACHE_TTL_MS };
+      return fallback;
+    }
 
     const p = profile.data!;
-    return {
+    const result: ProfileData = {
       profile: {
         ...local.profile,
         name: p.name,
@@ -65,12 +84,19 @@ export async function getProfileData(): Promise<ProfileData> {
         period: e.period ?? "",
         points: e.points ?? [],
       })),
-      projects: projects.data!.map((e) => ({
-        year: e.year ?? "",
-        name: e.name,
-        description: e.description ?? "",
-        tags: e.tags ?? [],
-      })),
+      projects: projects.data!.map((e, idx) => {
+        const matched =
+          local.projects.find((lp) => lp.name.toLowerCase() === String(e.name).toLowerCase()) ??
+          local.projects[idx] ??
+          local.projects[0];
+        return {
+          ...matched,
+          year: e.year ?? matched.year,
+          name: e.name ?? matched.name,
+          description: e.description ?? matched.description,
+          tags: Array.isArray(e.tags) && e.tags.length > 0 ? e.tags : matched.tags,
+        };
+      }),
       skills: skills.data!.map((e) => ({ group: e.group_name, items: e.items ?? [] })),
       education: education.data!.map((e) => ({
         school: e.school,
@@ -87,7 +113,11 @@ export async function getProfileData(): Promise<ProfileData> {
       })),
       source: "supabase",
     };
+
+    cachedResult = { data: result, expiresAt: Date.now() + CACHE_TTL_MS };
+    return result;
   } catch {
+    cachedResult = { data: fallback, expiresAt: Date.now() + CACHE_TTL_MS };
     return fallback;
   }
 }

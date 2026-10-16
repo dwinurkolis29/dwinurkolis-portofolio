@@ -48,25 +48,185 @@ export const experience = [
 
 export const projects = [
   {
+    slug: "android-security-research",
     year: "2026",
     name: "Android Security Research & Reverse Engineering",
+    headlineTitle:
+      "How I Reverse-Engineered Production Android Apps to Uncover Auth & TLS Pinning Flaws",
+    category: "Mobile AppSec & Binary Analysis",
+    impact: "Identified critical auth & pinning flaws",
     description:
-      "Authorized Android application security research and reverse engineering to analyze application structure, application logic, data flow, security controls, and potential security weaknesses.",
-    tags: ["Android", "Security", "Reverse Engineering"],
+      "Authorized Android application security research and reverse engineering: decompiling DEX bytecode with JADX, runtime hooking via Frida, bypassing SSL pinning & root detection, and auditing API traffic against OWASP MASVS.",
+    laymanSummary:
+      "Audit keamanan menyeluruh pada aplikasi Android produksi untuk menemukan celah kebocoran data sebelum disalahgunakan pihak luar.",
+    problem:
+      "Aplikasi mobile sering menyimpan logika bisnis sensitif, kunci API, atau token sesi di sisi klien yang rentan dibongkar oleh penyerang.",
+    outcome:
+      "Memetakan alur data sensitif, membuktikan risiko bypass proteksi aplikasi (SSL Pinning & Root Detection), dan menyusun rekomendasi perbaikan berstandar OWASP MASVS.",
+    tags: ["Android", "Security", "Reverse Engineering", "Frida", "JADX", "OWASP MASVS"],
+    highlights: [
+      "Dekompilasi APK/DEX ke Java & Smali untuk membedah logika autentikasi",
+      "Dynamic instrumentation saat runtime untuk menguji ketahanan SSL Pinning",
+      "Analisis trafik REST API terenkripsi & audit penyimpanan lokal (Keystore/SharedPrefs)",
+    ],
+    architecture: [
+      { step: "APK / DEX Binary", detail: "Static unpacking & manifest inspection" },
+      { step: "JADX & Smali", detail: "Control-flow & crypto key analysis" },
+      { step: "Frida Runtime Hook", detail: "Bypass root & TLS pinning checks" },
+      { step: "Mitmproxy / Burp", detail: "API payload & token vulnerability audit" },
+    ],
+    decisions: [
+      "Mengombinasikan static analysis (JADX) dan dynamic hooking (Frida) agar validasi keamanan tidak hanya berbasis tebakan kode statis.",
+      "Menggunakan skrip injeksi Javascript pada Frida untuk mengintersepsi fungsi Cipher dan OkHttp CertificatePinner secara real-time tanpa memodifikasi signature APK.",
+      "Menyusun laporan temuan dengan bukti reproduksi langkah-demi-langkah agar tim developer bisa langsung menambal celah (remediation).",
+    ],
+    codeTitle: "frida-pinning-audit.js",
+    codeSnippet: [
+      "Java.perform(() => {",
+      '  const Pinner = Java.use("okhttp3.CertificatePinner");',
+      '  Pinner.check.overload("java.lang.String", "java.util.List")',
+      "    .implementation = function (hostname) {",
+      '      console.log("[audit] TLS check intercepted for: " + hostname);',
+      "      return; // Verify server-side token validation resilience",
+      "    };",
+      "});",
+    ],
+    screens: [
+      {
+        label: "1. Static Decompilation",
+        caption: "Memetakan struktur package, exported activity, dan hardcoded secret pada DEX bytecode.",
+      },
+      {
+        label: "2. Runtime Hooking",
+        caption: "Menguji ketahanan root detection & certificate pinning pada perangkat uji menggunakan Frida.",
+      },
+      {
+        label: "3. Traffic & Storage Audit",
+        caption: "Memverifikasi enkripsi payload API dan keamanan penyimpanan token di local storage.",
+      },
+    ],
   },
   {
+    slug: "broilerku",
     year: "2025",
     name: "BroilerKu",
+    headlineTitle:
+      "How I Automated Broiler Farm FCR Calculations and Replaced Paper Logs with Real-Time Telemetry",
+    category: "AgriTech Mobile Application",
+    impact: "Automated FCR & daily flock telemetry",
     description:
-      "Flutter-based mobile application for broiler farm management, including daily feed recording, livestock monitoring, and automated FCR calculations.",
-    tags: ["Flutter", "Dart", "Firebase"],
+      "Building a production Flutter management system for broiler farms: daily feed recording, depletion tracking, automated Feed Conversion Ratio (FCR) & Performance Index engines, and real-time multi-shed sync on Firebase.",
+    laymanSummary:
+      "Aplikasi manajemen kandang ayam broiler yang menggantikan pencatatan kertas dengan perhitungan efisiensi pakan (FCR) otomatis.",
+    problem:
+      "Peternak mencatat pakan, kematian ayam, dan bobot harian di kertas atau chat manual sehingga perhitungan FCR (Feed Conversion Ratio) lambat dan rawan salah hitung.",
+    outcome:
+      "Memangkas waktu rekap harian kandang dan memberikan indikator performa panen (FCR & Indeks Performa) secara instan di HP peternak.",
+    tags: ["Flutter", "Dart", "Firebase", "Clean Architecture", "Firestore"],
+    highlights: [
+      "Pencatatan pakan harian, deplesi (kematian), dan sampling bobot ayam per kandang",
+      "Kalkulasi otomatis FCR (Feed Conversion Ratio) & estimasi panen secara real-time",
+      "Sinkronisasi data multi-kandang berbasis Cloud Firestore & Firebase Auth",
+    ],
+    architecture: [
+      { step: "Flutter UI Layer", detail: "Reactive forms & FCR dashboard cards" },
+      { step: "Domain / FCR Engine", detail: "Automated FCR, depletion & IP calculation" },
+      { step: "Repository Layer", detail: "State sync & validation rules" },
+      { step: "Firebase / Firestore", detail: "Real-time cloud persistence & auth" },
+    ],
+    decisions: [
+      "Memisahkan logika perhitungan peternakan (FCR, tingkat deplesi, rata-rata bobot) ke domain layer murni agar hasil kalkulasi konsisten dan mudah diuji.",
+      "Menggunakan struktur koleksi hierarkis di Firestore (Farms -> Cycles -> DailyLogs) untuk mempercepat query rekap per periode panen.",
+      "Mendesain form input harian dengan validasi batas wajar agar petugas kandang tidak salah memasukkan satuan kilogram vs sak pakan.",
+    ],
+    codeTitle: "fcr_calculator.dart",
+    codeSnippet: [
+      "class FcrCalculator {",
+      "  static double compute({",
+      "    required double totalFeedKg,",
+      "    required int livePopulation,",
+      "    required double avgWeightKg,",
+      "  }) {",
+      "    final totalBiomassKg = livePopulation * avgWeightKg;",
+      "    if (totalBiomassKg <= 0) return 0.0;",
+      "    return double.parse((totalFeedKg / totalBiomassKg).toStringAsFixed(2));",
+      "  }",
+      "}",
+    ],
+    screens: [
+      {
+        label: "1. Dashboard Kandang",
+        caption: "Ringkasan metrik utama: skor FCR saat ini, populasi hidup, dan grafik konsumsi pakan.",
+      },
+      {
+        label: "2. Input Harian Cepat",
+        caption: "Form pencatatan jumlah pakan masuk, angka kematian harian, dan hasil timbang sampel.",
+      },
+      {
+        label: "3. Analitik Siklus Panen",
+        caption: "Evaluasi performa kandang dari hari ke-1 (DOC) hingga panen untuk membandingkan efisiensi.",
+      },
+    ],
   },
   {
+    slug: "fama-agent",
     year: "2024",
     name: "Fama Agent",
+    headlineTitle:
+      "How I Built a Resilient Geo-Tagged Field Reporting App for Low-Signal Operations",
+    category: "Enterprise Field Operations",
+    impact: "Real-time GPS & media field reporting",
     description:
-      "Android-based field reporting application for submitting text, image, and location-based reports to a centralized system.",
-    tags: ["Kotlin", "Android", "REST API"],
+      "Native Android field reporting application built with Kotlin and MVVM: high-precision GPS coordinate locking, background image compression (3.8MB to ~400KB), and multipart REST API synchronization.",
+    laymanSummary:
+      "Aplikasi pelaporan petugas lapangan berbasis Android untuk mengirim bukti foto, titik lokasi GPS akurat, dan laporan aktivitas langsung ke kantor pusat.",
+    problem:
+      "Pelaporan tim lapangan lewat grup pesan tidak terstruktur, sulit diverifikasi titik lokasinya, dan foto sering gagal terkirim saat sinyal seluler lemah.",
+    outcome:
+      "Menyediakan sistem pelaporan terpusat dengan bukti koordinat GPS tervalidasi dan kompresi foto otomatis yang hemat kuota serta stabil di jaringan lapangan.",
+    tags: ["Kotlin", "Android", "REST API", "MVVM", "Location Services"],
+    highlights: [
+      "Pengambilan laporan lapangan lengkap dengan teks, foto kamera, dan titik koordinat GPS",
+      "Kompresi gambar otomatis di sisi perangkat sebelum dikirim ke REST API pusat",
+      "Arsitektur MVVM dengan penanganan state loading, error, dan retry yang stabil",
+    ],
+    architecture: [
+      { step: "Camera & FusedGPS", detail: "Capture photo & high-accuracy coordinates" },
+      { step: "Media Compressor", detail: "Downscale & EXIF/Geo metadata binding" },
+      { step: "Kotlin ViewModel", detail: "MVVM state management & retry queue" },
+      { step: "Central REST API", detail: "Multipart upload & token authentication" },
+    ],
+    decisions: [
+      "Menerapkan kompresi bitmap di background thread sebelum multipart upload untuk mencegah OutOfMemoryError dan mempercepat pengiriman di jaringan 3G/4G lemah.",
+      "Menggunakan FusedLocationProviderClient dengan validasi akurasi radius agar titik koordinat laporan benar-benar presisi saat dikirim.",
+      "Memisahkan UI Activity/Fragment dari logika jaringan menggunakan arsitektur MVVM agar pengiriman data tidak batal saat rotasi layar.",
+    ],
+    codeTitle: "ReportViewModel.kt",
+    codeSnippet: [
+      "fun submitFieldReport(note: String, photo: File, loc: Location) {",
+      "  viewModelScope.launch {",
+      "    _uiState.value = ReportUiState.Uploading",
+      "    val compressed = imageCompressor.compressToMaxKb(photo, maxKb = 450)",
+      "    repository.uploadMultipart(note, compressed, loc.latitude, loc.longitude)",
+      "      .onSuccess { _uiState.value = ReportUiState.Success(it.reportId) }",
+      "      .onFailure { _uiState.value = ReportUiState.Error(it.message) }",
+      "  }",
+      "}",
+    ],
+    screens: [
+      {
+        label: "1. Capture & Geo-Tagging",
+        caption: "Pengambilan foto bukti langsung dari kamera disertai penguncian koordinat GPS otomatis.",
+      },
+      {
+        label: "2. Smart Upload Queue",
+        caption: "Kompresi ukuran gambar otomatis dan indikator status pengiriman ke server pusat.",
+      },
+      {
+        label: "3. Riwayat & Status Laporan",
+        caption: "Daftar laporan yang sudah terkirim beserta waktu, lokasi, dan status verifikasi.",
+      },
+    ],
   },
 ];
 
