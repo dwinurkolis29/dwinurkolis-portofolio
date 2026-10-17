@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
 import { StoreBadge } from "@/components/store-badge";
+import { ProjectDiagramWindow } from "./project-diagram";
 import type { Project } from "@/lib/profile-data";
 
 export type ProjectItem = Project;
@@ -21,164 +22,6 @@ function CubeIcon() {
       <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
       <line x1="12" y1="22.08" x2="12" y2="12" />
     </svg>
-  );
-}
-
-export function ProjectDiagramWindow({ slug, title }: { slug: string; title: string }) {
-  return (
-    <div className="relative w-full aspect-video rounded-lg border border-border border-b-4 border-r-4 bg-[#0d1219] shadow-2xl overflow-hidden transition-transform duration-500 group-hover/image:-translate-y-1.5">
-      {/* Top Window Bar (macOS / Terminal dots like eltrovert.com) */}
-      <div className="flex h-6 items-center justify-between border-b border-border bg-[#17202b] px-3">
-        <div className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-red-500" />
-          <span className="h-2 w-2 rounded-full bg-amber-400" />
-          <span className="h-2 w-2 rounded-full bg-emerald-500" />
-        </div>
-        <span className="truncate font-mono text-[10px] text-muted">{title} — architecture.flow</span>
-        <span className="w-8" />
-      </div>
-
-      {/* Flowchart Canvas */}
-      <div className="relative flex h-[calc(100%-1.5rem)] w-full flex-col items-center justify-between bg-[#f8fafc] p-3 text-[#0f172a] sm:p-4">
-        {slug === "android-security-research" && (
-          <div className="flex h-full w-full flex-col items-center justify-between font-mono text-[10px] sm:text-[11px]">
-            {/* Top Node */}
-            <div className="rounded-full border border-violet-400 bg-violet-100 px-3.5 py-1 font-semibold text-violet-900 shadow-xs">
-              Target Production APK (DEX / Native Libs)
-            </div>
-
-            <div className="h-2.5 w-px bg-slate-400" />
-
-            {/* Middle Layer Node */}
-            <div className="rounded border border-slate-400 bg-slate-600 px-4 py-1.5 text-center text-white shadow-xs">
-              <div className="font-bold">JADX &amp; Smali Static Decompiler</div>
-              <div className="text-[9px] text-slate-200">Manifest, Crypto &amp; Auth Flow Mapping</div>
-            </div>
-
-            <div className="h-2.5 w-px bg-slate-400" />
-
-            {/* Central Hub Node */}
-            <div className="rounded border border-amber-600 bg-amber-500 px-4 py-1.5 text-center text-white shadow-sm">
-              <div className="font-bold">Frida Runtime Instrumentation Server</div>
-              <div className="text-[9px] text-amber-50">Dynamic API Hooking &amp; Memory Inspection</div>
-            </div>
-
-            {/* Branch Lines */}
-            <div className="relative flex w-full items-center justify-center py-1">
-              <div className="h-px w-3/4 bg-slate-400" />
-            </div>
-
-            {/* Bottom 3 Leaf Nodes */}
-            <div className="grid w-full grid-cols-3 gap-2">
-              <div className="rounded border border-emerald-700 bg-emerald-600 p-1.5 text-center text-white shadow-xs">
-                <div className="font-bold">SSL Pinning Bypass</div>
-                <div className="text-[8px] text-emerald-100">OkHttp / TrustManager</div>
-              </div>
-              <div className="rounded border border-sky-700 bg-sky-600 p-1.5 text-center text-white shadow-xs">
-                <div className="font-bold">Burp / Mitmproxy</div>
-                <div className="text-[8px] text-sky-100">TLS Payload Audit</div>
-              </div>
-              <div className="rounded border border-purple-400 bg-purple-100 p-1.5 text-center text-purple-950 shadow-xs">
-                <div className="font-bold">OWASP MASVS</div>
-                <div className="text-[8px] text-purple-700">Remediation Report</div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {slug === "broilerku" && (
-          <div className="flex h-full w-full flex-col items-center justify-between font-mono text-[10px] sm:text-[11px]">
-            {/* Top Node */}
-            <div className="rounded-full border border-violet-400 bg-violet-100 px-3.5 py-1 font-semibold text-violet-900 shadow-xs">
-              Peternak / Field Operator (Mobile Input)
-            </div>
-
-            <div className="h-2.5 w-px bg-slate-400" />
-
-            {/* Middle Layer Node */}
-            <div className="rounded border border-slate-400 bg-slate-600 px-4 py-1.5 text-center text-white shadow-xs">
-              <div className="font-bold">Flutter Presentation &amp; State Layer</div>
-              <div className="text-[9px] text-slate-200">Daily Feed, Mortality &amp; Flock Weight Form</div>
-            </div>
-
-            <div className="h-2.5 w-px bg-slate-400" />
-
-            {/* Central Engine Node */}
-            <div className="rounded border border-amber-600 bg-amber-500 px-4 py-1.5 text-center text-white shadow-sm">
-              <div className="font-bold">Automated FCR &amp; IP Calculation Engine</div>
-              <div className="text-[9px] text-amber-50">Biomass Ratio &amp; Depletion Threshold Logic</div>
-            </div>
-
-            {/* Branch Lines */}
-            <div className="relative flex w-full items-center justify-center py-1">
-              <div className="h-px w-3/4 bg-slate-400" />
-            </div>
-
-            {/* Bottom 3 Leaf Nodes */}
-            <div className="grid w-full grid-cols-3 gap-2">
-              <div className="rounded border border-emerald-700 bg-emerald-600 p-1.5 text-center text-white shadow-xs">
-                <div className="font-bold">Kandang A-01</div>
-                <div className="text-[8px] text-emerald-100">FCR: 1.48 · IP: 382</div>
-              </div>
-              <div className="rounded border border-sky-700 bg-sky-600 p-1.5 text-center text-white shadow-xs">
-                <div className="font-bold">Cloud Firestore</div>
-                <div className="text-[8px] text-sky-100">Real-Time Cycle Sync</div>
-              </div>
-              <div className="rounded border border-purple-400 bg-purple-100 p-1.5 text-center text-purple-950 shadow-xs">
-                <div className="font-bold">Harvest Analytics</div>
-                <div className="text-[8px] text-purple-700">Growth Curve &amp; Export</div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {slug !== "android-security-research" && slug !== "broilerku" && (
-          <div className="flex h-full w-full flex-col items-center justify-between font-mono text-[10px] sm:text-[11px]">
-            {/* Top Node */}
-            <div className="rounded-full border border-violet-400 bg-violet-100 px-3.5 py-1 font-semibold text-violet-900 shadow-xs">
-              Field Agent Device (Camera + FusedGPS)
-            </div>
-
-            <div className="h-2.5 w-px bg-slate-400" />
-
-            {/* Middle Layer Node */}
-            <div className="rounded border border-slate-400 bg-slate-600 px-4 py-1.5 text-center text-white shadow-xs">
-              <div className="font-bold">Media Compressor &amp; Geo-Validator</div>
-              <div className="text-[9px] text-slate-200">3.8MB → 410KB Bitmap + Radius Lock (±3.2m)</div>
-            </div>
-
-            <div className="h-2.5 w-px bg-slate-400" />
-
-            {/* Central Hub Node */}
-            <div className="rounded border border-amber-600 bg-amber-500 px-4 py-1.5 text-center text-white shadow-sm">
-              <div className="font-bold">Kotlin MVVM Repository &amp; Retry Queue</div>
-              <div className="text-[9px] text-amber-50">Coroutine Multipart Dispatcher</div>
-            </div>
-
-            {/* Branch Lines */}
-            <div className="relative flex w-full items-center justify-center py-1">
-              <div className="h-px w-3/4 bg-slate-400" />
-            </div>
-
-            {/* Bottom 3 Leaf Nodes */}
-            <div className="grid w-full grid-cols-3 gap-2">
-              <div className="rounded border border-emerald-700 bg-emerald-600 p-1.5 text-center text-white shadow-xs">
-                <div className="font-bold">REST API Gateway</div>
-                <div className="text-[8px] text-emerald-100">Bearer JWT Verified</div>
-              </div>
-              <div className="rounded border border-sky-700 bg-sky-600 p-1.5 text-center text-white shadow-xs">
-                <div className="font-bold">Central Storage</div>
-                <div className="text-[8px] text-sky-100">Geo-Tagged Evidence</div>
-              </div>
-              <div className="rounded border border-purple-400 bg-purple-100 p-1.5 text-center text-purple-950 shadow-xs">
-                <div className="font-bold">HQ Dashboard</div>
-                <div className="text-[8px] text-purple-700">Live Field Monitoring</div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
   );
 }
 
@@ -253,7 +96,7 @@ export function ProjectShowcase({
                 {/* Visual Diagram Window Column */}
                 <div className={`relative group/image ${reverse ? "lg:order-1" : "lg:order-2"}`}>
                   <Link href={`/projects/${p.slug}`} className="block" aria-label={`View ${p.name}`}>
-                    <ProjectDiagramWindow slug={p.slug} title={p.name} />
+                    <ProjectDiagramWindow title={p.name} architecture={p.architecture} index={idx} />
                   </Link>
                 </div>
               </div>

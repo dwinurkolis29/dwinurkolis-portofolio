@@ -121,10 +121,35 @@ body {
   translate: 0 24px;
 }
 
+/* Diagram connectors: dashes in currentColor that flow along the line. */
+@keyframes flow-x {
+  to {
+    background-position: 12px 0;
+  }
+}
+
+@keyframes flow-y {
+  to {
+    background-position: 0 12px;
+  }
+}
+
+.flow-line-h {
+  background: repeating-linear-gradient(90deg, currentColor 0 6px, transparent 6px 12px);
+  animation: flow-x 0.8s linear infinite;
+}
+
+.flow-line-v {
+  background: repeating-linear-gradient(180deg, currentColor 0 6px, transparent 6px 12px);
+  animation: flow-y 0.8s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .float,
   .orbit,
-  .orbit-upright {
+  .orbit-upright,
+  .flow-line-h,
+  .flow-line-v {
     animation: none;
   }
   .parallax-layer,

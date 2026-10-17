@@ -5,7 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { StoreBadge } from "@/components/store-badge";
 import { getProfileData } from "@/lib/profile-data";
-import { ProjectDiagramWindow } from "@/features/projects/project-showcase";
+import { ProjectDiagramWindow } from "@/features/projects/project-diagram";
 
 export const revalidate = 60;
 
@@ -128,7 +128,11 @@ export default async function ProjectDetailPage({
           <div className="space-y-14 lg:col-span-8">
             {/* Hero Architecture Flowchart Window */}
             <div>
-              <ProjectDiagramWindow slug={project.slug} title={project.name} />
+              <ProjectDiagramWindow
+                title={project.name}
+                architecture={project.architecture}
+                index={projects.indexOf(project)}
+              />
               <p className="mt-2.5 text-center font-mono text-xs text-muted">
                 Figure 1.0 — End-to-end architecture and data flow for {project.name}
               </p>
