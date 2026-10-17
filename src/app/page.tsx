@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { organisation, yamlSkills } from "@/data/profile";
+import { Window } from "@/components/window";
 import { ProjectShowcase } from "@/features/projects/project-showcase";
+import { ResearchSection } from "@/features/research/research-section";
 import { getProfileData } from "@/lib/profile-data";
 
 export const revalidate = 60;
@@ -8,34 +10,11 @@ export const revalidate = 60;
 const nav = [
   { href: "#experience", label: "Experience" },
   { href: "#projects", label: "Projects" },
+  { href: "#research", label: "Research" },
   { href: "#stack", label: "Stack" },
   { href: "#education", label: "Education" },
   { href: "#contact", label: "Contact" },
 ];
-
-function Window({
-  title,
-  className = "",
-  children,
-}: {
-  title: string;
-  className?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div
-      className={`overflow-hidden rounded-lg border border-border bg-surface/90 shadow-xl shadow-black/40 backdrop-blur ${className}`}
-    >
-      <div className="flex items-center gap-2 border-b border-border px-3 py-2">
-        <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
-        <span className="h-2.5 w-2.5 rounded-full bg-amber-300/70" />
-        <span className="h-2.5 w-2.5 rounded-full bg-accent/70" />
-        <span className="ml-2 font-mono text-xs text-muted">{title}</span>
-      </div>
-      <div className="p-4 font-mono text-xs leading-relaxed">{children}</div>
-    </div>
-  );
-}
 
 function Section({
   id,
@@ -68,7 +47,7 @@ function Tag({ children }: { children: React.ReactNode }) {
 }
 
 export default async function Home() {
-  const { profile, experience, projects, skills, education, achievements } =
+  const { profile, experience, projects, research, skills, education, achievements } =
     await getProfileData();
   return (
     <>
@@ -233,6 +212,12 @@ export default async function Home() {
         <Section id="projects" eyebrow="Engineering Spotlight" title="Selected projects">
           <ProjectShowcase projects={projects} />
         </Section>
+
+        {research.length > 0 && (
+          <Section id="research" eyebrow="Research" title="What I'm investigating">
+            <ResearchSection research={research} projects={projects} />
+          </Section>
+        )}
 
         <Section id="stack" eyebrow="Stack" title="Tools I work with">
           <div className="space-y-5">

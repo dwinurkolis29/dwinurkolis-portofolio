@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StoreBadge } from "@/components/store-badge";
 import type { Project } from "@/lib/profile-data";
 
 export type ProjectItem = Project;
@@ -242,9 +243,9 @@ export function ProjectShowcase({
                     href={`/projects/${p.slug}`}
                     className="inline-flex items-center gap-2 rounded-md border border-border bg-[#0b0f14] px-5 py-3 font-medium text-foreground transition-all hover:border-accent hover:bg-surface hover:text-accent"
                   >
-                    <span>View Project</span>
-                    <span aria-hidden="true">↗</span>
+                    <span>&gt; View Project_</span>
                   </Link>
+                  <StoreBadge url={p.storeUrl} />
                 </div>
               </div>
 

@@ -3,6 +3,7 @@ import path from "node:path";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { StoreBadge } from "@/components/store-badge";
 import { getProfileData } from "@/lib/profile-data";
 import { ProjectDiagramWindow } from "@/features/projects/project-showcase";
 
@@ -116,6 +117,8 @@ export default async function ProjectDetailPage({
             <p className="text-base leading-relaxed text-muted sm:text-xl">
               {project.description}
             </p>
+
+            <StoreBadge url={project.storeUrl} />
           </div>
         </header>
 
