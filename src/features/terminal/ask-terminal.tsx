@@ -65,7 +65,7 @@ export function AskTerminal({ context }: { context: TerminalContext }) {
           autoComplete="off"
           autoCapitalize="none"
           spellCheck={false}
-          className="min-w-0 flex-1 bg-transparent text-foreground placeholder:text-muted/60 focus:outline-none"
+          className="min-w-0 flex-1 bg-transparent text-base text-foreground sm:text-xs placeholder:text-muted/60 focus:outline-none"
         />
       </form>
     </Window>

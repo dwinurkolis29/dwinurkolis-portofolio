@@ -46,11 +46,11 @@ export function ScrollHeadline({ text }: { text: string }) {
     <div ref={ref} className="relative overflow-hidden py-4">
       <p
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-4 select-none text-center font-mono text-[12vw] font-bold leading-[0.95] tracking-tighter text-transparent opacity-30 [-webkit-text-stroke:1px_var(--accent)] [translate:calc(var(--shift,0)*-30vw)_0]"
+        className="pointer-events-none absolute inset-x-0 top-4 select-none text-center font-mono text-[clamp(3rem,12vw,9rem)] font-bold leading-[0.95] tracking-tighter text-transparent opacity-30 [-webkit-text-stroke:1px_var(--accent)] [translate:calc(var(--shift,0)*-30vw)_0]"
       >
         {text}
       </p>
-      <h2 className="relative text-center font-mono text-[12vw] font-bold leading-[0.95] tracking-tighter text-foreground [opacity:var(--fade,1)] [translate:calc(var(--shift,0)*30vw)_0]">
+      <h2 className="relative text-center font-mono text-[clamp(3rem,12vw,9rem)] font-bold leading-[0.95] tracking-tighter text-foreground [opacity:var(--fade,1)] [translate:calc(var(--shift,0)*30vw)_0]">
         {text}
       </h2>
     </div>

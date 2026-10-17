@@ -65,7 +65,7 @@ const topics = [
   },
 ];
 
-export function TopicSection() {
+export function TopicSection({ hasResearch }: { hasResearch: boolean }) {
   return (
     <section aria-label="Focus areas" className="py-16">
       <ScrollHeadline text="FROM MOBILE TO MODELS" />
@@ -79,7 +79,8 @@ export function TopicSection() {
 
       <Reveal className="mt-10">
         <ul className="grid gap-4 sm:grid-cols-3">
-          {topics.map(({ label, title, description, href, Icon }) => {
+          {topics.map(({ label, title, description, href: topicHref, Icon }) => {
+            const href = topicHref === "#research" && !hasResearch ? "#projects" : topicHref;
             const linkClass =
               "font-mono text-xs text-accent after:absolute after:inset-0 after:rounded-xl after:content-[''] hover:underline";
             return (

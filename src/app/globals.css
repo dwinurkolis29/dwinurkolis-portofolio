@@ -134,6 +134,7 @@ body {
   }
   [data-reveal][data-hidden] {
     opacity: 1;
+    translate: none;
   }
 }
 

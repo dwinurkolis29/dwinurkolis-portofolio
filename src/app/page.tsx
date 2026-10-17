@@ -26,11 +26,13 @@ function Section({
   id,
   eyebrow,
   title,
+  reveal = true,
   children,
 }: {
   id: string;
   eyebrow: string;
   title: string;
+  reveal?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -39,7 +41,7 @@ function Section({
       <h2 className="mt-2 mb-8 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
         {title}
       </h2>
-      <Reveal>{children}</Reveal>
+      {reveal ? <Reveal>{children}</Reveal> : children}
     </section>
   );
 }
@@ -66,13 +68,15 @@ export default async function Home() {
             nurkolis<span className="text-muted">.dev</span>
           </a>
           <ul className="flex min-w-0 flex-1 justify-end gap-x-4 overflow-x-auto font-mono text-xs text-muted [scrollbar-width:none]">
-            {nav.map((item) => (
-              <li key={item.href} className="shrink-0">
-                <a href={item.href} className="hover:text-foreground">
-                  {item.label}
-                </a>
-              </li>
-            ))}
+            {nav
+              .filter((item) => item.href !== "#research" || research.length > 0)
+              .map((item) => (
+                <li key={item.href} className="shrink-0">
+                  <a href={item.href} className="hover:text-foreground">
+                    {item.label}
+                  </a>
+                </li>
+              ))}
           </ul>
         </nav>
       </header>
@@ -193,7 +197,7 @@ export default async function Home() {
           </div>
         </section>
 
-        <TopicSection />
+        <TopicSection hasResearch={research.length > 0} />
 
         <Section id="experience" eyebrow="Experience" title="Where I've been building">
           <ol className="relative space-y-10 border-l border-border pl-6">
@@ -217,12 +221,12 @@ export default async function Home() {
           </ol>
         </Section>
 
-        <Section id="projects" eyebrow="Engineering Spotlight" title="Selected projects">
+        <Section id="projects" eyebrow="Engineering Spotlight" title="Selected projects" reveal={false}>
           <ProjectShowcase projects={projects} />
         </Section>
 
         {research.length > 0 && (
-          <Section id="research" eyebrow="Research" title="What I'm investigating">
+          <Section id="research" eyebrow="Research" title="What I'm investigating" reveal={false}>
             <ResearchSection research={research} projects={projects} />
           </Section>
         )}

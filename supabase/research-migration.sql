@@ -19,7 +19,7 @@ create table if not exists public.research (
 
 create table if not exists public.research_updates (
   id bigint generated always as identity primary key,
-  research_slug text not null references public.research (slug) on delete cascade,
+  research_slug text not null references public.research (slug) on update cascade on delete cascade,
   date date not null,                       -- entri bulanan memakai tanggal 1, mis. 2026-10-01
   note text not null
 );
@@ -48,6 +48,7 @@ update public.projects
   where slug = 'broilerku' and store_url is null;
 
 -- Data awal
+-- Catatan: bila slug data awal ini diganti atau dihapus, menjalankan ulang file ini akan memasukkan data awal lagi.
 insert into public.research (sort_order, slug, title, summary, stage, institution, related_project_slug) values (
   1,
   'broiler-fcr-prediction',
