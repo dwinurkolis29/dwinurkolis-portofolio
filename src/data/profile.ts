@@ -1,3 +1,5 @@
+import type { Research } from "@/lib/research";
+
 export const profile = {
   name: "Mokhammad Dwi Nurkolis",
   role: "Android Engineer",
@@ -49,6 +51,7 @@ export const experience = [
 export const projects = [
   {
     slug: "android-security-research",
+    storeUrl: "",
     year: "2026",
     name: "Android Security Research & Reverse Engineering",
     headlineTitle:
@@ -108,6 +111,7 @@ export const projects = [
   },
   {
     slug: "broilerku",
+    storeUrl: "https://play.google.com/store/apps/details?id=com.chickin.mobile",
     year: "2025",
     name: "BroilerKu",
     headlineTitle:
@@ -170,6 +174,7 @@ export const projects = [
   },
   {
     slug: "fama-agent",
+    storeUrl: "",
     year: "2024",
     name: "Fama Agent",
     headlineTitle:
@@ -225,6 +230,28 @@ export const projects = [
       {
         label: "3. Riwayat & Status Laporan",
         caption: "Daftar laporan yang sudah terkirim beserta waktu, lokasi, dan status verifikasi.",
+      },
+    ],
+  },
+];
+
+export const research: Research[] = [
+  {
+    slug: "broiler-fcr-prediction",
+    title: "Predicting Feed Conversion Ratio (FCR) in Broiler Farms",
+    summary:
+      "Master's research on predicting broiler feed conversion ratio from farm records, building on the daily feed and flock data I worked with while building BroilerKu.",
+    stage: "proposal",
+    institution: "Universitas Islam Indonesia – Master of Informatics (Data Science)",
+    supervisor: "",
+    methods: [],
+    datasets: [],
+    relatedProjectSlug: "broilerku",
+    links: [],
+    updates: [
+      {
+        date: "2026-10-01",
+        note: "Started the master's research; defining the problem and reviewing literature on FCR prediction.",
       },
     ],
   },

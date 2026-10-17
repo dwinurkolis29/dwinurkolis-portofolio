@@ -1,7 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import * as local from "@/data/profile";
+import { mapResearch, type Research } from "@/lib/research";
 
-export type Project = (typeof local.projects)[number] & { status: string };
+export type Project = (typeof local.projects)[number] & { status: string; storeUrl: string };
 
 export type ProfileData = {
   profile: typeof local.profile;
@@ -11,6 +12,7 @@ export type ProfileData = {
   education: typeof local.education;
   achievements: typeof local.achievements;
   retrospective: typeof local.retrospective;
+  research: Research[];
   source: "supabase" | "local";
 };
 
@@ -22,6 +24,7 @@ const fallback: ProfileData = {
   education: local.education,
   achievements: local.achievements,
   retrospective: local.retrospective,
+  research: local.research,
   source: "local",
 };
 
@@ -57,6 +60,7 @@ function mapProjects(rows: Row[]): Project[] {
       codeSnippet: strList(r.code_snippet),
       screens: (Array.isArray(r.screens) ? r.screens : []) as Project["screens"],
       status: str(r.status) || "completed",
+      storeUrl: str(r.store_url),
     }));
 }
 
@@ -83,7 +87,7 @@ export async function getProfileData(): Promise<ProfileData> {
           }),
       },
     });
-    const [profile, experience, projects, skills, education, achievements, retro] =
+    const [profile, experience, projects, skills, education, achievements, retro, res, upd] =
       await Promise.all([
         db.from("profile").select("*").eq("id", 1).single(),
         db.from("experience").select("*").order("sort_order"),
@@ -92,6 +96,8 @@ export async function getProfileData(): Promise<ProfileData> {
         db.from("education").select("*").order("sort_order"),
         db.from("achievements").select("*").order("sort_order"),
         db.from("retrospective").select("*").order("sort_order"),
+        db.from("research").select("*").order("sort_order"),
+        db.from("research_updates").select("*"),
       ]);
 
     const failed = [profile, experience, projects, skills, education, achievements, retro].find(
@@ -136,6 +142,7 @@ export async function getProfileData(): Promise<ProfileData> {
         title: e.title,
         text: e.body ?? "",
       })),
+      research: mapResearch(res.error ? null : res.data, upd.error ? null : upd.data, local.research),
       source: "supabase",
     };
 
