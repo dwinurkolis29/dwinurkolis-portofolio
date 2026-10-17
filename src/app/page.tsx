@@ -1,6 +1,14 @@
 import Image from "next/image";
 import { organisation, yamlSkills } from "@/data/profile";
+import { Window } from "@/components/window";
+import { ParallaxGroup, ParallaxLayer } from "@/components/motion/parallax";
+import { Reveal } from "@/components/motion/reveal";
+import { Typewriter } from "@/components/motion/typewriter";
+import { OrbitIcons } from "@/features/hero/orbit-icons";
 import { ProjectShowcase } from "@/features/projects/project-showcase";
+import { ResearchSection } from "@/features/research/research-section";
+import { TopicSection } from "@/features/topics/topic-section";
+import { AskTerminal } from "@/features/terminal/ask-terminal";
 import { getProfileData } from "@/lib/profile-data";
 
 export const revalidate = 60;
@@ -8,44 +16,23 @@ export const revalidate = 60;
 const nav = [
   { href: "#experience", label: "Experience" },
   { href: "#projects", label: "Projects" },
+  { href: "#research", label: "Research" },
   { href: "#stack", label: "Stack" },
   { href: "#education", label: "Education" },
   { href: "#contact", label: "Contact" },
 ];
 
-function Window({
-  title,
-  className = "",
-  children,
-}: {
-  title: string;
-  className?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div
-      className={`overflow-hidden rounded-lg border border-border bg-surface/90 shadow-xl shadow-black/40 backdrop-blur ${className}`}
-    >
-      <div className="flex items-center gap-2 border-b border-border px-3 py-2">
-        <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
-        <span className="h-2.5 w-2.5 rounded-full bg-amber-300/70" />
-        <span className="h-2.5 w-2.5 rounded-full bg-accent/70" />
-        <span className="ml-2 font-mono text-xs text-muted">{title}</span>
-      </div>
-      <div className="p-4 font-mono text-xs leading-relaxed">{children}</div>
-    </div>
-  );
-}
-
 function Section({
   id,
   eyebrow,
   title,
+  reveal = true,
   children,
 }: {
   id: string;
   eyebrow: string;
   title: string;
+  reveal?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -54,7 +41,7 @@ function Section({
       <h2 className="mt-2 mb-8 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
         {title}
       </h2>
-      {children}
+      {reveal ? <Reveal>{children}</Reveal> : children}
     </section>
   );
 }
@@ -68,7 +55,7 @@ function Tag({ children }: { children: React.ReactNode }) {
 }
 
 export default async function Home() {
-  const { profile, experience, projects, skills, education, achievements } =
+  const { profile, experience, projects, research, skills, education, achievements } =
     await getProfileData();
   return (
     <>
@@ -81,13 +68,15 @@ export default async function Home() {
             nurkolis<span className="text-muted">.dev</span>
           </a>
           <ul className="flex min-w-0 flex-1 justify-end gap-x-4 overflow-x-auto font-mono text-xs text-muted [scrollbar-width:none]">
-            {nav.map((item) => (
-              <li key={item.href} className="shrink-0">
-                <a href={item.href} className="hover:text-foreground">
-                  {item.label}
-                </a>
-              </li>
-            ))}
+            {nav
+              .filter((item) => item.href !== "#research" || research.length > 0)
+              .map((item) => (
+                <li key={item.href} className="shrink-0">
+                  <a href={item.href} className="hover:text-foreground">
+                    {item.label}
+                  </a>
+                </li>
+              ))}
           </ul>
         </nav>
       </header>
@@ -106,7 +95,7 @@ export default async function Home() {
             <h1 className="mt-5 font-mono text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-6xl">
               Hello, I&apos;m
               <br />
-              <span className="text-accent">Kolis</span>
+              <Typewriter text="Kolis" className="text-accent" />
               <span className="cursor text-accent">_</span>
             </h1>
             <p className="mt-5 text-base leading-relaxed text-muted sm:text-lg">
@@ -127,17 +116,16 @@ export default async function Home() {
               ))}
             </Window>
 
-            <div
-              className="mt-6 flex max-w-md items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3 font-mono text-sm"
-              role="note"
-              aria-label="AI assistant, coming soon"
-            >
-              <span className="text-accent">&gt;</span>
-              <span className="flex-1 truncate text-muted">ask_ai --about=me</span>
-              <span className="rounded border border-border px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted">
-                soon
-              </span>
-            </div>
+            <AskTerminal
+              context={{
+                name: profile.name,
+                role: profile.role,
+                email: profile.email,
+                projects: projects.map((p) => ({ name: p.name, slug: p.slug })),
+                research: research.map((r) => ({ title: r.title, stage: r.stage })),
+                stack: skills.flatMap((g) => g.items),
+              }}
+            />
 
             <div className="mt-6 flex flex-wrap gap-3">
               <a
@@ -157,56 +145,58 @@ export default async function Home() {
             </div>
           </div>
 
-          <div
-            aria-hidden="true"
-            className="relative mx-auto flex h-[440px] w-full max-w-lg items-center justify-center sm:h-[520px]"
-          >
-            {/* Background Glow & Orbital Rings matching eltrovert.com */}
-            <div className="glow absolute inset-0" />
-            <div className="pointer-events-none absolute h-80 w-80 rounded-full border border-accent/15 sm:h-96 sm:w-96" />
-            <div className="pointer-events-none absolute h-64 w-64 rounded-full border border-accent-2/10 sm:h-72 sm:w-72" />
+          <div aria-hidden="true" className="relative mx-auto h-[440px] w-full max-w-lg sm:h-[520px]">
+            <ParallaxGroup className="absolute inset-0 flex items-center justify-center">
+              {/* Background glow and orbital rings; the outer ring carries the orbit icons */}
+              <div className="glow absolute inset-0" />
+              <ParallaxLayer depth={14} className="absolute inset-0 flex items-center justify-center">
+                <OrbitIcons />
+                <div className="pointer-events-none absolute h-64 w-64 rounded-full border border-accent-2/10 sm:h-72 sm:w-72" />
+              </ParallaxLayer>
 
-            {/* 3D Human Pilot Illustration */}
-            <div className="float relative z-10 flex h-full w-full items-center justify-center [--rot:0deg]">
-              <Image
-                src="/pilot-hero.png"
-                alt="3D Pilot Character Illustration"
-                width={420}
-                height={560}
-                priority
-                className="h-[380px] w-auto object-contain mix-blend-lighten drop-shadow-[0_20px_40px_rgba(74,222,128,0.18)] sm:h-[470px]"
-              />
-            </div>
+              {/* 3D Human Pilot Illustration */}
+              <ParallaxLayer depth={10} className="relative z-10 flex h-full w-full items-center justify-center">
+                <div className="float flex h-full w-full items-center justify-center [--rot:0deg]">
+                  <Image
+                    src="/pilot-hero.png"
+                    alt="3D Pilot Character Illustration"
+                    width={420}
+                    height={560}
+                    priority
+                    className="h-[380px] w-auto object-contain mix-blend-lighten drop-shadow-[0_20px_40px_rgba(74,222,128,0.18)] sm:h-[470px]"
+                  />
+                </div>
+              </ParallaxLayer>
 
-            {/* Floating Code Windows around the Pilot */}
-            <Window
-              title="ProfileViewModel.kt"
-              className="float absolute -left-2 top-4 z-20 hidden w-56 [--rot:-3deg] sm:block"
-            >
-              <p><span className="text-violet-300">class</span> PilotVM : ViewModel() {"{"}</p>
-              <p className="pl-3"><span className="text-violet-300">val</span> stack = listOf(</p>
-              <p className="pl-6 text-accent">&quot;Kotlin&quot;, &quot;Flutter&quot;</p>
-              <p className="pl-3">)</p>
-              <p>{"}"}</p>
-            </Window>
-            <Window
-              title="knox-policy.json"
-              className="float absolute -right-2 bottom-20 z-20 hidden w-52 [--rot:2deg] [animation-delay:-2s] sm:block"
-            >
-              <p>{"{"}</p>
-              <p className="pl-3"><span className="text-accent-2">&quot;device&quot;</span>: <span className="text-accent">&quot;managed&quot;</span>,</p>
-              <p className="pl-3"><span className="text-accent-2">&quot;encrypted&quot;</span>: <span className="text-amber-300">true</span></p>
-              <p>{"}"}</p>
-            </Window>
-            <Window
-              title="build.log"
-              className="float absolute bottom-2 left-0 z-20 hidden w-60 [--rot:-1deg] [animation-delay:-4s] sm:block"
-            >
-              <p className="text-muted">&gt; flutter build apk --release</p>
-              <p className="text-accent">✓ Built app-release.apk</p>
-            </Window>
+              {/* Floating Code Windows around the Pilot */}
+              <ParallaxLayer depth={22} className="absolute -left-2 top-4 z-20 hidden w-56 sm:block">
+                <Window title="ProfileViewModel.kt" className="float [--rot:-3deg]">
+                  <p><span className="text-violet-300">class</span> PilotVM : ViewModel() {"{"}</p>
+                  <p className="pl-3"><span className="text-violet-300">val</span> stack = listOf(</p>
+                  <p className="pl-6 text-accent">&quot;Kotlin&quot;, &quot;Flutter&quot;</p>
+                  <p className="pl-3">)</p>
+                  <p>{"}"}</p>
+                </Window>
+              </ParallaxLayer>
+              <ParallaxLayer depth={28} className="absolute -right-2 bottom-20 z-20 hidden w-52 sm:block">
+                <Window title="knox-policy.json" className="float [--rot:2deg] [animation-delay:-2s]">
+                  <p>{"{"}</p>
+                  <p className="pl-3"><span className="text-accent-2">&quot;device&quot;</span>: <span className="text-accent">&quot;managed&quot;</span>,</p>
+                  <p className="pl-3"><span className="text-accent-2">&quot;encrypted&quot;</span>: <span className="text-amber-300">true</span></p>
+                  <p>{"}"}</p>
+                </Window>
+              </ParallaxLayer>
+              <ParallaxLayer depth={18} className="absolute bottom-2 left-0 z-20 hidden w-60 sm:block">
+                <Window title="build.log" className="float [--rot:-1deg] [animation-delay:-4s]">
+                  <p className="text-muted">&gt; flutter build apk --release</p>
+                  <p className="text-accent">✓ Built app-release.apk</p>
+                </Window>
+              </ParallaxLayer>
+            </ParallaxGroup>
           </div>
         </section>
+
+        <TopicSection hasResearch={research.length > 0} />
 
         <Section id="experience" eyebrow="Experience" title="Where I've been building">
           <ol className="relative space-y-10 border-l border-border pl-6">
@@ -230,9 +220,15 @@ export default async function Home() {
           </ol>
         </Section>
 
-        <Section id="projects" eyebrow="Engineering Spotlight" title="Selected projects">
+        <Section id="projects" eyebrow="Engineering Spotlight" title="Selected projects" reveal={false}>
           <ProjectShowcase projects={projects} />
         </Section>
+
+        {research.length > 0 && (
+          <Section id="research" eyebrow="Research" title="What I'm investigating" reveal={false}>
+            <ResearchSection research={research} projects={projects} />
+          </Section>
+        )}
 
         <Section id="stack" eyebrow="Stack" title="Tools I work with">
           <div className="space-y-5">
@@ -307,7 +303,7 @@ export default async function Home() {
                 rel="noopener noreferrer"
                 className="text-accent hover:underline"
               >
-                in/mokhammad-dwi-nurkolis
+                M Dwi Nurkolis
               </a>
             </li>
           </ul>

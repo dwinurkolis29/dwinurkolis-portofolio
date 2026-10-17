@@ -3,7 +3,7 @@ import { getProfileData } from "@/lib/profile-data";
 import { ProjectShowcase } from "@/features/projects/project-showcase";
 
 export const metadata = {
-  title: ">_ explored_projects | Mokhammad Dwi Nurkolis",
+  title: ">_ explored_projects | M Dwi Nurkolis",
   description: "A complete journal log of my engineering projects, mobile architecture, and security research.",
 };
 
@@ -12,7 +12,7 @@ export const revalidate = 60;
 export default async function ProjectsPage() {
   const { profile, projects } = await getProfileData();
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
       {/* Top Navbar */}
       <header className="sticky top-3 z-20 px-4">
         <nav
@@ -22,7 +22,7 @@ export default async function ProjectsPage() {
           <Link href="/" className="shrink-0 font-mono text-sm text-accent">
             nurkolis<span className="text-muted">.dev</span>
           </Link>
-          <ul className="flex items-center gap-x-5 font-mono text-xs text-muted">
+          <ul className="flex min-w-0 items-center gap-x-5 overflow-x-auto font-mono text-xs text-muted [scrollbar-width:none] [&>li]:shrink-0">
             <li>
               <Link href="/" className="hover:text-foreground">
                 Home

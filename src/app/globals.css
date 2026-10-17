@@ -25,9 +25,15 @@
 
 html {
   scroll-behavior: smooth;
+  /* With html clipping too, body's clip stays on body instead of propagating
+     to the viewport, so overflow can't widen the mobile layout viewport. */
+  overflow-x: clip;
 }
 
 body {
+  /* Rotating/translated decorations (orbit ring, headline) must never add
+     horizontal scroll; `clip` keeps sticky headers working, unlike `hidden`. */
+  overflow-x: clip;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
@@ -88,8 +94,98 @@ body {
   background-size: 24px 24px;
 }
 
+/* Pointer parallax: --px/--py come from ParallaxGroup, --depth from ParallaxLayer.
+   Uses `translate` (not `transform`) so it composes with the .float keyframes. */
+.parallax-layer {
+  translate: calc(var(--px, 0) * var(--depth, 0) * 1px) calc(var(--py, 0) * var(--depth, 0) * 1px);
+  transition: translate 300ms ease-out;
+}
+
+@keyframes orbit {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* The ring turns; each icon counter-turns so it stays upright. */
+.orbit {
+  animation: orbit 40s linear infinite;
+}
+
+.orbit-upright {
+  animation: orbit 40s linear infinite reverse;
+}
+
+[data-reveal] {
+  transition:
+    opacity 600ms ease-out,
+    translate 600ms ease-out;
+}
+
+[data-reveal][data-hidden] {
+  opacity: 0;
+  translate: 0 24px;
+}
+
+/* Site-wide topographic contour lines (public/contour.svg is a seamless tile),
+   kept faint and faded toward the edges so text stays readable. Deliberately
+   static: animating background-position repaints the whole viewport each frame. */
+.contour-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+  background-image: url("/contour.svg");
+  background-size: 1200px 900px;
+  opacity: 0.12;
+  mask-image: radial-gradient(ellipse 120% 90% at 50% 30%, black 35%, transparent 85%);
+}
+
+/* Diagram connectors: dashes in currentColor that flow along the line. */
+@keyframes flow-x {
+  to {
+    background-position: 12px 0;
+  }
+}
+
+@keyframes flow-y {
+  to {
+    background-position: 0 12px;
+  }
+}
+
+.flow-line-h {
+  background: repeating-linear-gradient(90deg, currentColor 0 6px, transparent 6px 12px);
+  animation: flow-x 0.8s linear infinite;
+}
+
+.flow-line-v {
+  background: repeating-linear-gradient(180deg, currentColor 0 6px, transparent 6px 12px);
+  animation: flow-y 0.8s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .float {
+  .float,
+  .orbit,
+  .orbit-upright,
+  .flow-line-h,
+  .flow-line-v {
     animation: none;
+  }
+  .parallax-layer,
+  [data-reveal] {
+    transition: none;
+    translate: none;
+  }
+  [data-reveal][data-hidden] {
+    opacity: 1;
+    translate: none;
+  }
+}
+
+@media print {
+  [data-reveal][data-hidden] {
+    opacity: 1;
+    translate: none;
   }
 }

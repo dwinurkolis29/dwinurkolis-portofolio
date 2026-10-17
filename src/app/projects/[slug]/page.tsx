@@ -3,8 +3,9 @@ import path from "node:path";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { StoreBadge } from "@/components/store-badge";
 import { getProfileData } from "@/lib/profile-data";
-import { ProjectDiagramWindow } from "@/features/projects/project-showcase";
+import { ProjectDiagramWindow } from "@/features/projects/project-diagram";
 
 export const revalidate = 60;
 
@@ -53,7 +54,7 @@ export default async function ProjectDetailPage({
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
       {/* Top Navbar */}
       <header className="sticky top-3 z-20 px-4">
         <nav
@@ -63,7 +64,7 @@ export default async function ProjectDetailPage({
           <Link href="/" className="shrink-0 font-mono text-sm text-accent">
             nurkolis<span className="text-muted">.dev</span>
           </Link>
-          <ul className="flex items-center gap-x-5 font-mono text-xs text-muted">
+          <ul className="flex min-w-0 items-center gap-x-5 overflow-x-auto font-mono text-xs text-muted [scrollbar-width:none] [&>li]:shrink-0">
             <li>
               <Link href="/" className="hover:text-foreground">
                 Home
@@ -116,6 +117,8 @@ export default async function ProjectDetailPage({
             <p className="text-base leading-relaxed text-muted sm:text-xl">
               {project.description}
             </p>
+
+            <StoreBadge url={project.storeUrl} />
           </div>
         </header>
 
@@ -125,7 +128,11 @@ export default async function ProjectDetailPage({
           <div className="space-y-14 lg:col-span-8">
             {/* Hero Architecture Flowchart Window */}
             <div>
-              <ProjectDiagramWindow slug={project.slug} title={project.name} />
+              <ProjectDiagramWindow
+                title={project.name}
+                architecture={project.architecture}
+                index={projects.indexOf(project)}
+              />
               <p className="mt-2.5 text-center font-mono text-xs text-muted">
                 Figure 1.0 — End-to-end architecture and data flow for {project.name}
               </p>
