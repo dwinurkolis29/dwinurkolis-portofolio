@@ -7,6 +7,7 @@ import { Typewriter } from "@/components/motion/typewriter";
 import { OrbitIcons } from "@/features/hero/orbit-icons";
 import { ProjectShowcase } from "@/features/projects/project-showcase";
 import { ResearchSection } from "@/features/research/research-section";
+import { TopicSection } from "@/features/topics/topic-section";
 import { AskTerminal } from "@/features/terminal/ask-terminal";
 import { getProfileData } from "@/lib/profile-data";
 
@@ -191,6 +192,8 @@ export default async function Home() {
             </ParallaxGroup>
           </div>
         </section>
+
+        <TopicSection />
 
         <Section id="experience" eyebrow="Experience" title="Where I've been building">
           <ol className="relative space-y-10 border-l border-border pl-6">
