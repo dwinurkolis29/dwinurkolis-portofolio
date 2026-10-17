@@ -56,14 +56,19 @@ function mapLinks(v: unknown): ResearchLink[] {
   return out;
 }
 
+function numId(v: unknown): number {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
 function mapUpdates(slug: string, updateRows: Row[] | null): ResearchUpdate[] {
   if (!updateRows) return [];
   return updateRows
-    .filter((u) => u.research_slug === slug)
+    .filter((u) => u.research_slug === slug && str(u.note) !== "")
     .sort((a, b) => {
       const d = str(b.date).localeCompare(str(a.date));
       if (d !== 0) return d;
-      return Number(b.id ?? 0) - Number(a.id ?? 0);
+      return numId(b.id) - numId(a.id);
     })
     .map((u) => ({ date: str(u.date), note: str(u.note) }));
 }
@@ -75,7 +80,7 @@ export function mapResearch(
 ): Research[] {
   if (rows === null) return fallback;
   return rows
-    .filter((r) => r.published !== false)
+    .filter((r) => r.published !== false && str(r.slug) !== "" && str(r.title) !== "")
     .map((r) => {
       const slug = str(r.slug);
       return {
