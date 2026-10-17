@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { profile, projects } from "@/data/profile";
+import { getProfileData } from "@/lib/profile-data";
 import { ProjectShowcase } from "@/features/projects/project-showcase";
 
 export const metadata = {
@@ -7,8 +7,10 @@ export const metadata = {
   description: "A complete journal log of my engineering projects, mobile architecture, and security research.",
 };
 
-export default function ProjectsPage() {
+export const revalidate = 60;
 
+export default async function ProjectsPage() {
+  const { profile, projects } = await getProfileData();
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Top Navbar */}

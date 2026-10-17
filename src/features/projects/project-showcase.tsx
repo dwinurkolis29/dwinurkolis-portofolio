@@ -1,7 +1,7 @@
 import Link from "next/link";
-import type { projects as localProjects } from "@/data/profile";
+import type { Project } from "@/lib/profile-data";
 
-export type ProjectItem = (typeof localProjects)[number];
+export type ProjectItem = Project;
 
 function CubeIcon() {
   return (

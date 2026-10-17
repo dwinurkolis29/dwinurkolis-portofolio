@@ -3,11 +3,14 @@ import path from "node:path";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { projects as localProjects, profile } from "@/data/profile";
+import { getProfileData } from "@/lib/profile-data";
 import { ProjectDiagramWindow } from "@/features/projects/project-showcase";
 
-export function generateStaticParams() {
-  return localProjects.map((p) => ({ slug: p.slug }));
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const { projects } = await getProfileData();
+  return projects.map((p) => ({ slug: p.slug }));
 }
 
 function findScreenshot(slug: string, indexOneBased: number): string | null {
@@ -42,7 +45,8 @@ export default async function ProjectDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = localProjects.find((p) => p.slug === slug);
+  const { profile, projects } = await getProfileData();
+  const project = projects.find((p) => p.slug === slug);
 
   if (!project) {
     notFound();
@@ -99,6 +103,8 @@ export default async function ProjectDetailPage({
           <div className="space-y-4 max-w-4xl">
             <div className="inline-flex items-center gap-2 rounded-xs border border-accent/30 bg-accent/10 px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider text-accent">
               <span>⚡ {project.year} Project</span>
+              <span>·</span>
+              <span>{project.status.replace(/_/g, " ")}</span>
               <span>·</span>
               <span>{project.category}</span>
             </div>

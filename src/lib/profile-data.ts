@@ -1,10 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 import * as local from "@/data/profile";
 
+export type Project = (typeof local.projects)[number] & { status: string };
+
 export type ProfileData = {
   profile: typeof local.profile;
   experience: typeof local.experience;
-  projects: typeof local.projects;
+  projects: Project[];
   skills: typeof local.skills;
   education: typeof local.education;
   achievements: typeof local.achievements;
@@ -15,13 +17,48 @@ export type ProfileData = {
 const fallback: ProfileData = {
   profile: local.profile,
   experience: local.experience,
-  projects: local.projects,
+  projects: local.projects.map((p) => ({ ...p, status: "completed" })),
   skills: local.skills,
   education: local.education,
   achievements: local.achievements,
   retrospective: local.retrospective,
   source: "local",
 };
+
+type Row = Record<string, unknown>;
+
+const str = (v: unknown) => (typeof v === "string" ? v : "");
+const strList = (v: unknown) => (Array.isArray(v) ? v.map(String) : []);
+const slugify = (v: string) =>
+  v.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+// Semua isi project dibaca dari Supabase. Jika kolom baru belum dimigrasi
+// (supabase/projects-migration.sql), pakai data lokal agar halaman tetap jalan.
+function mapProjects(rows: Row[]): Project[] {
+  if (!rows.some((r) => r.slug)) return fallback.projects;
+  return rows
+    .filter((r) => r.published !== false)
+    .map((r) => ({
+      slug: str(r.slug) || slugify(str(r.name)),
+      year: str(r.year),
+      name: str(r.name),
+      headlineTitle: str(r.headline_title) || str(r.name),
+      category: str(r.category),
+      impact: str(r.impact),
+      description: str(r.description),
+      laymanSummary: str(r.layman_summary),
+      problem: str(r.problem),
+      outcome: str(r.outcome),
+      tags: strList(r.tags),
+      highlights: strList(r.highlights),
+      architecture: (Array.isArray(r.architecture) ? r.architecture : []) as Project["architecture"],
+      decisions: strList(r.decisions),
+      codeTitle: str(r.code_title),
+      codeSnippet: strList(r.code_snippet),
+      screens: (Array.isArray(r.screens) ? r.screens : []) as Project["screens"],
+      status: str(r.status) || "completed",
+    }));
+}
 
 const CACHE_TTL_MS = 60_000;
 let cachedResult: { data: ProfileData; expiresAt: number } | null = null;
@@ -84,19 +121,7 @@ export async function getProfileData(): Promise<ProfileData> {
         period: e.period ?? "",
         points: e.points ?? [],
       })),
-      projects: projects.data!.map((e, idx) => {
-        const matched =
-          local.projects.find((lp) => lp.name.toLowerCase() === String(e.name).toLowerCase()) ??
-          local.projects[idx] ??
-          local.projects[0];
-        return {
-          ...matched,
-          year: e.year ?? matched.year,
-          name: e.name ?? matched.name,
-          description: e.description ?? matched.description,
-          tags: Array.isArray(e.tags) && e.tags.length > 0 ? e.tags : matched.tags,
-        };
-      }),
+      projects: mapProjects(projects.data!),
       skills: skills.data!.map((e) => ({ group: e.group_name, items: e.items ?? [] })),
       education: education.data!.map((e) => ({
         school: e.school,
