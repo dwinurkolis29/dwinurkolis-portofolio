@@ -1,7 +1,7 @@
 import { test, expect } from "vitest";
 import { COMMANDS, runCommand, type TerminalContext } from "./commands";
 
-const ctx: TerminalContext = { name: "Dwi", role: "Android Engineer", email: "a@b.c", linkedin: "https://l.in/x",
+const ctx: TerminalContext = { name: "Dwi", role: "Android Engineer", email: "a@b.c",
   projects: [{ name: "BroilerKu", slug: "broilerku" }], research: [{ title: "FCR", stage: "proposal" }], stack: ["Kotlin"] };
 test("help lists every command", () => { const out = runCommand("help", ctx).lines.join("\n"); for (const c of COMMANDS) expect(out).toContain(c); });
 test("normalizes case and whitespace", () => expect(runCommand("  HELP ", ctx)).toEqual(runCommand("help", ctx)));
@@ -12,3 +12,9 @@ test("research shows title and stage", () => expect(runCommand("research", ctx).
 test("contact shows email", () => expect(runCommand("contact", ctx).lines.join(" ")).toContain("a@b.c"));
 test("clear", () => expect(runCommand("clear", ctx)).toEqual({ lines: [], clear: true }));
 test("unknown", () => expect(runCommand("sudo rm", ctx).lines).toEqual(["command not found: sudo rm — try help"]));
+
+test("contact names LinkedIn without exposing the profile URL", () => {
+  const out = runCommand("contact", ctx).lines.join(" ");
+  expect(out).toContain("linkedin  Dwi");
+  expect(out).not.toContain("http");
+});

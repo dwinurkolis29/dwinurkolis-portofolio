@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mokhammad Dwi Nurkolis — Android Engineer",
+  title: "M Dwi Nurkolis — Android Engineer",
   description:
-    "Personal profile of Mokhammad Dwi Nurkolis: Android Engineer (Kotlin, Flutter), mobile security, and Data Science master's student at Universitas Islam Indonesia.",
+    "Personal profile of M Dwi Nurkolis: Android Engineer (Kotlin, Flutter), mobile security, and Data Science master's student at Universitas Islam Indonesia.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

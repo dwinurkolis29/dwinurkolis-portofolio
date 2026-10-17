@@ -3,7 +3,7 @@ import { getProfileData } from "@/lib/profile-data";
 import { ProjectShowcase } from "@/features/projects/project-showcase";
 
 export const metadata = {
-  title: ">_ explored_projects | Mokhammad Dwi Nurkolis",
+  title: ">_ explored_projects | M Dwi Nurkolis",
   description: "A complete journal log of my engineering projects, mobile architecture, and security research.",
 };
 

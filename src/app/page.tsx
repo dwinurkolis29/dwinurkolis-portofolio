@@ -121,7 +121,6 @@ export default async function Home() {
                 name: profile.name,
                 role: profile.role,
                 email: profile.email,
-                linkedin: profile.linkedin,
                 projects: projects.map((p) => ({ name: p.name, slug: p.slug })),
                 research: research.map((r) => ({ title: r.title, stage: r.stage })),
                 stack: skills.flatMap((g) => g.items),
@@ -304,7 +303,7 @@ export default async function Home() {
                 rel="noopener noreferrer"
                 className="text-accent hover:underline"
               >
-                in/mokhammad-dwi-nurkolis
+                M Dwi Nurkolis
               </a>
             </li>
           </ul>

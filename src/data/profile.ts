@@ -1,7 +1,7 @@
 import type { Research } from "@/lib/research";
 
 export const profile = {
-  name: "Mokhammad Dwi Nurkolis",
+  name: "M Dwi Nurkolis",
   role: "Android Engineer",
   location: "Kediri, East Java · studying in Yogyakarta, Indonesia",
   email: "kolisdestroyer29@gmail.com",

@@ -4,7 +4,7 @@ Tanggal: 2026-10-17 · Status: disetujui pemilik (hero: ilustrasi + parallax, ta
 
 ## Maksud & alasan
 
-Pemilik web (Mokhammad Dwi Nurkolis, Android Engineer, mahasiswa S2 Data Science UII)
+Pemilik web (M Dwi Nurkolis, Android Engineer, mahasiswa S2 Data Science UII)
 ingin web portofolionya terasa **interaktif dan hidup** seperti https://eltrovert.com/,
 dan ingin menampilkan **penelitian S2-nya** (prediksi FCR pada peternakan broiler) yang
 baru tahap awal dan akan ia perbarui sendiri lewat Supabase.

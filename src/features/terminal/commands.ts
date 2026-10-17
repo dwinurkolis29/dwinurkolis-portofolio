@@ -2,7 +2,6 @@ export type TerminalContext = {
   name: string;
   role: string;
   email: string;
-  linkedin: string;
   projects: { name: string; slug: string }[];
   research: { title: string; stage: string }[];
   stack: string[];
@@ -44,7 +43,7 @@ function output(command: Command, ctx: TerminalContext): string[] {
     case "stack":
       return [ctx.stack.join(", ")];
     case "contact":
-      return [`email     ${ctx.email}`, `linkedin  ${ctx.linkedin}`];
+      return [`email     ${ctx.email}`, `linkedin  ${ctx.name} (link in Contact)`];
     case "clear":
       return [];
   }
