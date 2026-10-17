@@ -1,5 +1,9 @@
 import { test, expect } from "vitest";
-import { COMMANDS, runCommand, type TerminalContext } from "./commands";
+import { COMMANDS, runCommand as run, type TerminalContext } from "./commands";
+import { en } from "@/i18n/dictionaries/en";
+import { id } from "@/i18n/dictionaries/id";
+
+const runCommand = (input: string, c: TerminalContext) => run(input, c, en.terminal);
 
 const ctx: TerminalContext = { name: "Dwi", role: "Android Engineer", email: "a@b.c",
   projects: [{ name: "BroilerKu", slug: "broilerku" }], research: [{ title: "FCR", stage: "proposal" }], stack: ["Kotlin"] };
@@ -18,3 +22,15 @@ test("contact names LinkedIn without exposing the profile URL", () => {
   expect(out).toContain("linkedin  Dwi");
   expect(out).not.toContain("http");
 });
+
+test("projects link to the active language", () =>
+  expect(run("projects", ctx, id.terminal, "id").lines.join(" ")).toContain("/id/projects/broilerku"));
+
+test("help is translated but keeps the command names", () => {
+  const out = run("help", ctx, id.terminal, "id").lines.join("\n");
+  expect(out).toContain(id.terminal.available);
+  for (const c of COMMANDS) expect(out).toContain(c);
+});
+
+test("unknown command message is translated", () =>
+  expect(run("sudo", ctx, id.terminal, "id").lines).toEqual(["perintah tidak ditemukan: sudo — coba help"]));

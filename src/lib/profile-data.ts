@@ -1,5 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import * as local from "@/data/profile";
+import { defaultLocale, type Locale } from "@/i18n/config";
+import { localizeProfileData } from "@/lib/localize";
 import { mapResearch, type Research } from "@/lib/research";
 
 export type Project = (typeof local.projects)[number] & { status: string; storeUrl: string };
@@ -67,7 +69,11 @@ function mapProjects(rows: Row[]): Project[] {
 const CACHE_TTL_MS = 60_000;
 let cachedResult: { data: ProfileData; expiresAt: number } | null = null;
 
-export async function getProfileData(): Promise<ProfileData> {
+export async function getProfileData(lang: Locale = defaultLocale): Promise<ProfileData> {
+  return localizeProfileData(await getBaseProfileData(), lang);
+}
+
+async function getBaseProfileData(): Promise<ProfileData> {
   if (cachedResult && Date.now() < cachedResult.expiresAt) {
     return cachedResult.data;
   }

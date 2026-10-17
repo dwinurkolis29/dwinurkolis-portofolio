@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
 import { StoreBadge } from "@/components/store-badge";
 import { Window } from "@/components/window";
+import { localePath, type Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/dictionaries";
 import type { Project } from "@/lib/profile-data";
 import { formatMonth, stageBar, type Research } from "@/lib/research";
 
@@ -28,12 +30,24 @@ function Tags({ label, items }: { label: string; items: string[] }) {
   );
 }
 
-function ResearchCard({ item, projects }: { item: Research; projects: Project[] }) {
+function ResearchCard({
+  item,
+  projects,
+  lang,
+  t,
+  storeLabel,
+}: {
+  item: Research;
+  projects: Project[];
+  lang: Locale;
+  t: Dictionary["research"];
+  storeLabel: string;
+}) {
   const bar = stageBar(item.stage);
   const related = item.relatedProjectSlug
     ? projects.find((p) => p.slug === item.relatedProjectSlug)
     : undefined;
-  const stageLabel = item.stage.replace(/_/g, " ");
+  const stageLabel = t.stages[item.stage] ?? item.stage.replace(/_/g, " ");
 
   return (
     <Window title={`research/${item.slug}.md`}>
@@ -55,7 +69,7 @@ function ResearchCard({ item, projects }: { item: Research; projects: Project[] 
           )}
           <p>
             {bar && <span className="text-accent">{bar} </span>}
-            <span className="text-foreground">{item.stage}</span>
+            <span className="text-foreground">{stageLabel}</span>
           </p>
         </div>
 
@@ -65,17 +79,17 @@ function ResearchCard({ item, projects }: { item: Research; projects: Project[] 
 
         {item.supervisor && (
           <p>
-            <span className="text-muted">supervisor: </span>
+            <span className="text-muted">{t.supervisor} </span>
             <span className="text-foreground">{item.supervisor}</span>
           </p>
         )}
 
-        <Tags label="methods" items={item.methods} />
-        <Tags label="datasets" items={item.datasets} />
+        <Tags label={t.methods} items={item.methods} />
+        <Tags label={t.datasets} items={item.datasets} />
 
         {item.links.length > 0 && (
           <div>
-            <Label>links</Label>
+            <Label>{t.links}</Label>
             <ul className="space-y-1">
               {item.links.map((l) => (
                 <li key={l.url}>
@@ -95,16 +109,19 @@ function ResearchCard({ item, projects }: { item: Research; projects: Project[] 
 
         {related && (
           <div className="flex flex-wrap items-center gap-3">
-            <Link href={`/projects/${related.slug}`} className="text-accent hover:underline">
-              Related project: {related.name} ↗
+            <Link
+              href={localePath(lang, `/projects/${related.slug}`)}
+              className="text-accent hover:underline"
+            >
+              {t.relatedProject} {related.name} ↗
             </Link>
-            <StoreBadge url={related.storeUrl} />
+            <StoreBadge url={related.storeUrl} label={storeLabel} />
           </div>
         )}
 
         {item.updates.length > 0 && (
           <div>
-            <Label>changelog</Label>
+            <Label>{t.changelog}</Label>
             <ul className="space-y-1.5">
               {item.updates.map((u) => (
                 <li key={`${u.date}-${u.note}`} className="flex gap-2">
@@ -123,15 +140,27 @@ function ResearchCard({ item, projects }: { item: Research; projects: Project[] 
 export function ResearchSection({
   research,
   projects,
+  lang,
+  t,
+  storeLabel,
 }: {
   research: Research[];
   projects: Project[];
+  lang: Locale;
+  t: Dictionary["research"];
+  storeLabel: string;
 }) {
   return (
     <div className="space-y-6">
       {research.map((item) => (
         <Reveal key={item.slug}>
-          <ResearchCard item={item} projects={projects} />
+          <ResearchCard
+            item={item}
+            projects={projects}
+            lang={lang}
+            t={t}
+            storeLabel={storeLabel}
+          />
         </Reveal>
       ))}
     </div>
