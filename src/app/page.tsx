@@ -3,6 +3,7 @@ import { organisation, yamlSkills } from "@/data/profile";
 import { Window } from "@/components/window";
 import { ProjectShowcase } from "@/features/projects/project-showcase";
 import { ResearchSection } from "@/features/research/research-section";
+import { AskTerminal } from "@/features/terminal/ask-terminal";
 import { getProfileData } from "@/lib/profile-data";
 
 export const revalidate = 60;
@@ -106,17 +107,17 @@ export default async function Home() {
               ))}
             </Window>
 
-            <div
-              className="mt-6 flex max-w-md items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3 font-mono text-sm"
-              role="note"
-              aria-label="AI assistant, coming soon"
-            >
-              <span className="text-accent">&gt;</span>
-              <span className="flex-1 truncate text-muted">ask_ai --about=me</span>
-              <span className="rounded border border-border px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted">
-                soon
-              </span>
-            </div>
+            <AskTerminal
+              context={{
+                name: profile.name,
+                role: profile.role,
+                email: profile.email,
+                linkedin: profile.linkedin,
+                projects: projects.map((p) => ({ name: p.name, slug: p.slug })),
+                research: research.map((r) => ({ title: r.title, stage: r.stage })),
+                stack: skills.flatMap((g) => g.items),
+              }}
+            />
 
             <div className="mt-6 flex flex-wrap gap-3">
               <a
