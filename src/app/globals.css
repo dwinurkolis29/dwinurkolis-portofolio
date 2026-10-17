@@ -128,13 +128,8 @@ body {
 }
 
 /* Site-wide topographic contour lines (public/contour.svg is a seamless tile),
-   kept faint and faded toward the edges so text stays readable. */
-@keyframes contour-drift {
-  to {
-    background-position: 1200px 900px;
-  }
-}
-
+   kept faint and faded toward the edges so text stays readable. Deliberately
+   static: animating background-position repaints the whole viewport each frame. */
 .contour-bg {
   position: fixed;
   inset: 0;
@@ -144,7 +139,6 @@ body {
   background-size: 1200px 900px;
   opacity: 0.12;
   mask-image: radial-gradient(ellipse 120% 90% at 50% 30%, black 35%, transparent 85%);
-  animation: contour-drift 240s linear infinite;
 }
 
 /* Diagram connectors: dashes in currentColor that flow along the line. */
@@ -174,7 +168,6 @@ body {
   .float,
   .orbit,
   .orbit-upright,
-  .contour-bg,
   .flow-line-h,
   .flow-line-v {
     animation: none;
