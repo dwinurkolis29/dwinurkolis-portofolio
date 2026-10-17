@@ -2,8 +2,13 @@ import fs from "node:fs";
 import path from "node:path";
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { StoreBadge } from "@/components/store-badge";
+import { hasLocale, localePath, locales } from "@/i18n/config";
+import { getDictionary } from "@/i18n/dictionaries";
+import { format } from "@/i18n/format";
 import { getProfileData } from "@/lib/profile-data";
 import { ProjectDiagramWindow } from "@/features/projects/project-diagram";
 
@@ -11,7 +16,24 @@ export const revalidate = 60;
 
 export async function generateStaticParams() {
   const { projects } = await getProfileData();
-  return projects.map((p) => ({ slug: p.slug }));
+  return locales.flatMap((lang) => projects.map((p) => ({ lang, slug: p.slug })));
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]/projects/[slug]">): Promise<Metadata> {
+  const { lang, slug } = await params;
+  if (!hasLocale(lang)) return {};
+  const project = (await getProfileData(lang)).projects.find((p) => p.slug === slug);
+  if (!project) return {};
+  return {
+    title: `${project.name} | M Dwi Nurkolis`,
+    description: project.description,
+    alternates: {
+      canonical: `/${lang}/projects/${slug}`,
+      languages: Object.fromEntries(locales.map((l) => [l, `/${l}/projects/${slug}`])),
+    },
+  };
 }
 
 function findScreenshot(slug: string, indexOneBased: number): string | null {
@@ -33,20 +55,16 @@ function findScreenshot(slug: string, indexOneBased: number): string | null {
   return null;
 }
 
-const toc = [
-  { id: "overview", label: "The Journey Overview" },
-  { id: "architecture", label: "Phase 1: System Architecture" },
-  { id: "decisions", label: "Phase 2: Engineering & Code" },
-  { id: "workflow", label: "Phase 3: Execution & Screenshots" },
-];
+const tocIds = ["overview", "architecture", "decisions", "workflow"] as const;
 
 export default async function ProjectDetailPage({
   params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const { profile, projects } = await getProfileData();
+}: PageProps<"/[lang]/projects/[slug]">) {
+  const { lang, slug } = await params;
+  if (!hasLocale(lang)) notFound();
+
+  const t = getDictionary(lang);
+  const { profile, projects } = await getProfileData(lang);
   const project = projects.find((p) => p.slug === slug);
 
   if (!project) {
@@ -58,52 +76,53 @@ export default async function ProjectDetailPage({
       {/* Top Navbar */}
       <header className="sticky top-3 z-20 px-4">
         <nav
-          aria-label="Primary"
+          aria-label={t.nav.label}
           className="mx-auto flex max-w-3xl items-center justify-between gap-3 rounded-full border border-border bg-background/80 px-4 py-2 backdrop-blur"
         >
-          <Link href="/" className="shrink-0 font-mono text-sm text-accent">
+          <Link href={localePath(lang)} className="shrink-0 font-mono text-sm text-accent">
             nurkolis<span className="text-muted">.dev</span>
           </Link>
           <ul className="flex min-w-0 items-center gap-x-5 overflow-x-auto font-mono text-xs text-muted [scrollbar-width:none] [&>li]:shrink-0">
             <li>
-              <Link href="/" className="hover:text-foreground">
-                Home
+              <Link href={localePath(lang)} className="hover:text-foreground">
+                {t.nav.home}
               </Link>
             </li>
             <li>
-              <Link href="/projects" className="font-semibold text-accent">
-                Projects
+              <Link href={localePath(lang, "/projects")} className="font-semibold text-accent">
+                {t.nav.projects}
               </Link>
             </li>
             <li>
-              <Link href="/#experience" className="hover:text-foreground">
-                Experience
+              <Link href={localePath(lang, "/#experience")} className="hover:text-foreground">
+                {t.nav.experience}
               </Link>
             </li>
             <li>
-              <Link href="/#contact" className="hover:text-foreground">
-                Contact
+              <Link href={localePath(lang, "/#contact")} className="hover:text-foreground">
+                {t.nav.contact}
               </Link>
             </li>
           </ul>
+          <LanguageSwitcher lang={lang} label={t.switcher.label} names={t.switcher} />
         </nav>
       </header>
 
       <main className="mx-auto w-full max-w-6xl px-5 pb-24 pt-12 sm:pt-16">
         {/* Back button matching eltrovert.com */}
         <Link
-          href="/projects"
+          href={localePath(lang, "/projects")}
           className="group mb-8 inline-flex items-center gap-2 font-mono text-sm text-muted transition-colors hover:text-foreground"
         >
           <span className="transition-transform group-hover:-translate-x-1">←</span>
-          <span>../back_to_projects</span>
+          <span>{t.detail.back}</span>
         </Link>
 
         {/* Project Case Study Header */}
         <header className="mb-10 border-b border-border pb-10 sm:mb-12 sm:pb-12">
           <div className="space-y-4 max-w-4xl">
             <div className="inline-flex items-center gap-2 rounded-xs border border-accent/30 bg-accent/10 px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider text-accent">
-              <span>⚡ {project.year} Project</span>
+              <span>⚡ {format(t.detail.badge, { year: project.year })}</span>
               <span>·</span>
               <span>{project.status.replace(/_/g, " ")}</span>
               <span>·</span>
@@ -118,7 +137,7 @@ export default async function ProjectDetailPage({
               {project.description}
             </p>
 
-            <StoreBadge url={project.storeUrl} />
+            <StoreBadge url={project.storeUrl} label={t.store.googlePlay} />
           </div>
         </header>
 
@@ -134,14 +153,14 @@ export default async function ProjectDetailPage({
                 index={projects.indexOf(project)}
               />
               <p className="mt-2.5 text-center font-mono text-xs text-muted">
-                Figure 1.0 — End-to-end architecture and data flow for {project.name}
+                {format(t.detail.figure, { name: project.name })}
               </p>
             </div>
 
             {/* Section 1: The Journey Overview (For Everyone / Layman + HR) */}
             <section id="overview" className="scroll-mt-24 space-y-5">
               <h2 className="font-mono text-xl font-bold text-foreground sm:text-2xl">
-                <span className="text-accent">#</span> The Journey Overview
+                <span className="text-accent">#</span> {t.detail.overview.title}
               </h2>
               <p className="leading-relaxed text-foreground/90">
                 {project.laymanSummary}
@@ -150,7 +169,7 @@ export default async function ProjectDetailPage({
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-xl border border-border bg-surface p-5">
                   <p className="font-mono text-xs font-bold uppercase tracking-wider text-amber-300">
-                    The Starting Point (Masalah)
+                    {t.detail.overview.problem}
                   </p>
                   <p className="mt-2 text-sm leading-relaxed text-foreground/85">
                     {project.problem}
@@ -158,7 +177,7 @@ export default async function ProjectDetailPage({
                 </div>
                 <div className="rounded-xl border border-accent/30 bg-accent/5 p-5">
                   <p className="font-mono text-xs font-bold uppercase tracking-wider text-accent">
-                    Why This Matters (Hasil &amp; Dampak)
+                    {t.detail.overview.outcome}
                   </p>
                   <p className="mt-2 text-sm leading-relaxed text-foreground/85">
                     {project.outcome}
@@ -170,10 +189,10 @@ export default async function ProjectDetailPage({
             {/* Section 2: Phase 1 - System Architecture */}
             <section id="architecture" className="scroll-mt-24 space-y-5">
               <h2 className="font-mono text-xl font-bold text-foreground sm:text-2xl">
-                <span className="text-accent">#</span> Phase 1: System Architecture &amp; Pipeline
+                <span className="text-accent">#</span> {t.detail.architecture.title}
               </h2>
               <p className="text-sm leading-relaxed text-muted">
-                Arsitektur sistem dirancang secara modular agar setiap lapisan memiliki tanggung jawab yang terisolasi dengan jelas:
+                {t.detail.architecture.intro}
               </p>
 
               <div className="grid gap-4 sm:grid-cols-2">
@@ -182,7 +201,7 @@ export default async function ProjectDetailPage({
                     key={node.step}
                     className="rounded-xl border border-border bg-surface p-4"
                   >
-                    <span className="font-mono text-xs text-accent">STAGE 0{idx + 1}</span>
+                    <span className="font-mono text-xs text-accent">{t.detail.architecture.stage} 0{idx + 1}</span>
                     <h3 className="mt-1 font-mono text-base font-semibold text-foreground">
                       {node.step}
                     </h3>
@@ -193,7 +212,7 @@ export default async function ProjectDetailPage({
 
               <div className="rounded-xl border border-border bg-surface/60 p-5">
                 <h3 className="font-mono text-xs uppercase tracking-wider text-accent-2">
-                  Core Technical Deliverables
+                  {t.detail.architecture.deliverables}
                 </h3>
                 <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-foreground/90 marker:text-accent">
                   {project.highlights.map((h) => (
@@ -206,7 +225,7 @@ export default async function ProjectDetailPage({
             {/* Section 3: Phase 2 - Engineering Decisions & Code */}
             <section id="decisions" className="scroll-mt-24 space-y-5">
               <h2 className="font-mono text-xl font-bold text-foreground sm:text-2xl">
-                <span className="text-accent">#</span> Phase 2: Engineering Decisions &amp; Implementation
+                <span className="text-accent">#</span> {t.detail.decisions.title}
               </h2>
 
               <div className="space-y-3">
@@ -216,7 +235,7 @@ export default async function ProjectDetailPage({
                     className="rounded-xl border border-border bg-surface p-4 text-sm leading-relaxed text-foreground/90"
                   >
                     <span className="mr-2 font-mono text-xs font-bold text-accent">
-                      [Decision 0{idx + 1}]
+                      [{t.detail.decisions.decision} 0{idx + 1}]
                     </span>
                     {decision}
                   </div>
@@ -242,7 +261,7 @@ export default async function ProjectDetailPage({
             {/* Section 4: Phase 3 - Execution Stages & Screenshots */}
             <section id="workflow" className="scroll-mt-24 space-y-5">
               <h2 className="font-mono text-xl font-bold text-foreground sm:text-2xl">
-                <span className="text-accent">#</span> Phase 3: Application Screens &amp; Operational Workflow
+                <span className="text-accent">#</span> {t.detail.workflow.title}
               </h2>
               <div className="grid gap-4 sm:grid-cols-3">
                 {project.screens.map((scr, idx) => {
@@ -281,7 +300,7 @@ export default async function ProjectDetailPage({
           <aside className="lg:col-span-4">
             <div className="sticky top-24 rounded-xl border border-border bg-surface p-6">
               <h3 className="mb-5 font-mono text-base font-bold text-foreground">
-                Tech Stack
+                {t.detail.sidebar.techStack}
               </h3>
               <div className="space-y-3">
                 {project.tags.map((tag) => (
@@ -299,27 +318,27 @@ export default async function ProjectDetailPage({
 
               <div className="mt-6 border-t border-border pt-6 font-mono text-xs space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-muted">Year</span>
+                  <span className="text-muted">{t.detail.sidebar.year}</span>
                   <span className="text-foreground">{project.year}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted">Focus</span>
+                  <span className="text-muted">{t.detail.sidebar.focus}</span>
                   <span className="text-accent">{project.impact}</span>
                 </div>
               </div>
 
               <div className="mt-6 border-t border-border pt-6">
                 <h4 className="mb-3 font-mono text-xs font-bold uppercase tracking-wider text-foreground">
-                  Table of Contents
+                  {t.detail.sidebar.toc}
                 </h4>
                 <nav className="space-y-1 font-mono">
-                  {toc.map((item) => (
+                  {tocIds.map((id) => (
                     <a
-                      key={item.id}
-                      href={`#${item.id}`}
+                      key={id}
+                      href={`#${id}`}
                       className="block rounded px-2.5 py-1.5 text-xs text-muted transition-colors hover:bg-background hover:text-accent"
                     >
-                      {item.label}
+                      {t.detail.toc[id]}
                     </a>
                   ))}
                 </nav>
@@ -330,7 +349,7 @@ export default async function ProjectDetailPage({
       </main>
 
       <footer className="border-t border-border py-8 text-center font-mono text-xs text-muted">
-        © {new Date().getFullYear()} {profile.name} · built with Next.js
+        © {new Date().getFullYear()} {profile.name} · {t.footer.page}
       </footer>
     </div>
   );

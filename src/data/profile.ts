@@ -61,16 +61,16 @@ export const projects = [
     description:
       "Authorized Android application security research and reverse engineering: decompiling DEX bytecode with JADX, runtime hooking via Frida, bypassing SSL pinning & root detection, and auditing API traffic against OWASP MASVS.",
     laymanSummary:
-      "Audit keamanan menyeluruh pada aplikasi Android produksi untuk menemukan celah kebocoran data sebelum disalahgunakan pihak luar.",
+      "A thorough security audit of production Android apps to find data-leak weaknesses before outsiders can exploit them.",
     problem:
-      "Aplikasi mobile sering menyimpan logika bisnis sensitif, kunci API, atau token sesi di sisi klien yang rentan dibongkar oleh penyerang.",
+      "Mobile apps often keep sensitive business logic, API keys, or session tokens on the client, where attackers can pull them apart.",
     outcome:
-      "Memetakan alur data sensitif, membuktikan risiko bypass proteksi aplikasi (SSL Pinning & Root Detection), dan menyusun rekomendasi perbaikan berstandar OWASP MASVS.",
+      "Mapped sensitive data flows, proved the risk of bypassing app protections (SSL pinning & root detection), and wrote remediation recommendations based on OWASP MASVS.",
     tags: ["Android", "Security", "Reverse Engineering", "Frida", "JADX", "OWASP MASVS"],
     highlights: [
-      "Dekompilasi APK/DEX ke Java & Smali untuk membedah logika autentikasi",
-      "Dynamic instrumentation saat runtime untuk menguji ketahanan SSL Pinning",
-      "Analisis trafik REST API terenkripsi & audit penyimpanan lokal (Keystore/SharedPrefs)",
+      "Decompiling APK/DEX to Java & Smali to dissect authentication logic",
+      "Runtime dynamic instrumentation to test SSL pinning resilience",
+      "Encrypted REST API traffic analysis & local storage audit (Keystore/SharedPrefs)",
     ],
     architecture: [
       { step: "APK / DEX Binary", detail: "Static unpacking & manifest inspection" },
@@ -79,9 +79,9 @@ export const projects = [
       { step: "Mitmproxy / Burp", detail: "API payload & token vulnerability audit" },
     ],
     decisions: [
-      "Mengombinasikan static analysis (JADX) dan dynamic hooking (Frida) agar validasi keamanan tidak hanya berbasis tebakan kode statis.",
-      "Menggunakan skrip injeksi Javascript pada Frida untuk mengintersepsi fungsi Cipher dan OkHttp CertificatePinner secara real-time tanpa memodifikasi signature APK.",
-      "Menyusun laporan temuan dengan bukti reproduksi langkah-demi-langkah agar tim developer bisa langsung menambal celah (remediation).",
+      "Combined static analysis (JADX) with dynamic hooking (Frida) so security validation does not rest on guesses from static code alone.",
+      "Used JavaScript injection scripts in Frida to intercept Cipher and OkHttp CertificatePinner calls in real time without modifying the APK signature.",
+      "Wrote findings with step-by-step reproduction evidence so the developer team can patch the weaknesses right away.",
     ],
     codeTitle: "frida-pinning-audit.js",
     codeSnippet: [
@@ -97,15 +97,15 @@ export const projects = [
     screens: [
       {
         label: "1. Static Decompilation",
-        caption: "Memetakan struktur package, exported activity, dan hardcoded secret pada DEX bytecode.",
+        caption: "Mapping the package structure, exported activities, and hardcoded secrets in DEX bytecode.",
       },
       {
         label: "2. Runtime Hooking",
-        caption: "Menguji ketahanan root detection & certificate pinning pada perangkat uji menggunakan Frida.",
+        caption: "Testing root detection & certificate pinning resilience on a test device using Frida.",
       },
       {
         label: "3. Traffic & Storage Audit",
-        caption: "Memverifikasi enkripsi payload API dan keamanan penyimpanan token di local storage.",
+        caption: "Verifying API payload encryption and the security of tokens kept in local storage.",
       },
     ],
   },
@@ -121,16 +121,16 @@ export const projects = [
     description:
       "Building a production Flutter management system for broiler farms: daily feed recording, depletion tracking, automated Feed Conversion Ratio (FCR) & Performance Index engines, and real-time multi-shed sync on Firebase.",
     laymanSummary:
-      "Aplikasi manajemen kandang ayam broiler yang menggantikan pencatatan kertas dengan perhitungan efisiensi pakan (FCR) otomatis.",
+      "A broiler coop management app that replaces paper records with automatic feed efficiency (FCR) calculation.",
     problem:
-      "Peternak mencatat pakan, kematian ayam, dan bobot harian di kertas atau chat manual sehingga perhitungan FCR (Feed Conversion Ratio) lambat dan rawan salah hitung.",
+      "Farmers logged feed, mortality, and daily weight on paper or in chat messages, so Feed Conversion Ratio (FCR) calculation was slow and error-prone.",
     outcome:
-      "Memangkas waktu rekap harian kandang dan memberikan indikator performa panen (FCR & Indeks Performa) secara instan di HP peternak.",
+      "Cut the time spent on daily coop summaries and put harvest performance indicators (FCR & Performance Index) instantly on the farmer's phone.",
     tags: ["Flutter", "Dart", "Firebase", "Clean Architecture", "Firestore"],
     highlights: [
-      "Pencatatan pakan harian, deplesi (kematian), dan sampling bobot ayam per kandang",
-      "Kalkulasi otomatis FCR (Feed Conversion Ratio) & estimasi panen secara real-time",
-      "Sinkronisasi data multi-kandang berbasis Cloud Firestore & Firebase Auth",
+      "Daily feed, depletion (mortality), and weight sampling records per coop",
+      "Automatic FCR (Feed Conversion Ratio) calculation & real-time harvest estimates",
+      "Multi-coop data sync built on Cloud Firestore & Firebase Auth",
     ],
     architecture: [
       { step: "Flutter UI Layer", detail: "Reactive forms & FCR dashboard cards" },
@@ -139,9 +139,9 @@ export const projects = [
       { step: "Firebase / Firestore", detail: "Real-time cloud persistence & auth" },
     ],
     decisions: [
-      "Memisahkan logika perhitungan peternakan (FCR, tingkat deplesi, rata-rata bobot) ke domain layer murni agar hasil kalkulasi konsisten dan mudah diuji.",
-      "Menggunakan struktur koleksi hierarkis di Firestore (Farms -> Cycles -> DailyLogs) untuk mempercepat query rekap per periode panen.",
-      "Mendesain form input harian dengan validasi batas wajar agar petugas kandang tidak salah memasukkan satuan kilogram vs sak pakan.",
+      "Kept the farming calculations (FCR, depletion rate, average weight) in a pure domain layer so results stay consistent and easy to test.",
+      "Used a hierarchical collection structure in Firestore (Farms -> Cycles -> DailyLogs) to speed up per-harvest-period summary queries.",
+      "Designed the daily input form with sanity-range validation so coop staff do not mix up kilograms and feed sacks.",
     ],
     codeTitle: "fcr_calculator.dart",
     codeSnippet: [
@@ -159,16 +159,16 @@ export const projects = [
     ],
     screens: [
       {
-        label: "1. Dashboard Kandang",
-        caption: "Ringkasan metrik utama: skor FCR saat ini, populasi hidup, dan grafik konsumsi pakan.",
+        label: "1. Coop Dashboard",
+        caption: "Key metrics at a glance: current FCR score, live population, and a feed consumption chart.",
       },
       {
-        label: "2. Input Harian Cepat",
-        caption: "Form pencatatan jumlah pakan masuk, angka kematian harian, dan hasil timbang sampel.",
+        label: "2. Quick Daily Input",
+        caption: "A form to record incoming feed, daily mortality, and sample weighing results.",
       },
       {
-        label: "3. Analitik Siklus Panen",
-        caption: "Evaluasi performa kandang dari hari ke-1 (DOC) hingga panen untuk membandingkan efisiensi.",
+        label: "3. Harvest Cycle Analytics",
+        caption: "Coop performance review from day 1 (DOC) to harvest to compare efficiency.",
       },
     ],
   },
@@ -184,16 +184,16 @@ export const projects = [
     description:
       "Native Android field reporting application built with Kotlin and MVVM: high-precision GPS coordinate locking, background image compression (3.8MB to ~400KB), and multipart REST API synchronization.",
     laymanSummary:
-      "Aplikasi pelaporan petugas lapangan berbasis Android untuk mengirim bukti foto, titik lokasi GPS akurat, dan laporan aktivitas langsung ke kantor pusat.",
+      "An Android field-officer reporting app that sends photo evidence, accurate GPS locations, and activity reports straight to head office.",
     problem:
-      "Pelaporan tim lapangan lewat grup pesan tidak terstruktur, sulit diverifikasi titik lokasinya, dan foto sering gagal terkirim saat sinyal seluler lemah.",
+      "Field teams reported through chat groups: unstructured, hard to verify by location, and photos often failed to send on weak mobile signal.",
     outcome:
-      "Menyediakan sistem pelaporan terpusat dengan bukti koordinat GPS tervalidasi dan kompresi foto otomatis yang hemat kuota serta stabil di jaringan lapangan.",
+      "Provided a centralized reporting system with validated GPS coordinate evidence and automatic photo compression that saves data and stays stable on field networks.",
     tags: ["Kotlin", "Android", "REST API", "MVVM", "Location Services"],
     highlights: [
-      "Pengambilan laporan lapangan lengkap dengan teks, foto kamera, dan titik koordinat GPS",
-      "Kompresi gambar otomatis di sisi perangkat sebelum dikirim ke REST API pusat",
-      "Arsitektur MVVM dengan penanganan state loading, error, dan retry yang stabil",
+      "Field reports captured with text, camera photos, and GPS coordinates",
+      "Automatic on-device image compression before sending to the central REST API",
+      "MVVM architecture with solid loading, error, and retry state handling",
     ],
     architecture: [
       { step: "Camera & FusedGPS", detail: "Capture photo & high-accuracy coordinates" },
@@ -202,9 +202,9 @@ export const projects = [
       { step: "Central REST API", detail: "Multipart upload & token authentication" },
     ],
     decisions: [
-      "Menerapkan kompresi bitmap di background thread sebelum multipart upload untuk mencegah OutOfMemoryError dan mempercepat pengiriman di jaringan 3G/4G lemah.",
-      "Menggunakan FusedLocationProviderClient dengan validasi akurasi radius agar titik koordinat laporan benar-benar presisi saat dikirim.",
-      "Memisahkan UI Activity/Fragment dari logika jaringan menggunakan arsitektur MVVM agar pengiriman data tidak batal saat rotasi layar.",
+      "Compressed bitmaps on a background thread before the multipart upload to prevent OutOfMemoryError and speed up delivery on weak 3G/4G networks.",
+      "Used FusedLocationProviderClient with accuracy-radius validation so report coordinates are genuinely precise when submitted.",
+      "Separated Activity/Fragment UI from networking logic with MVVM so uploads are not cancelled when the screen rotates.",
     ],
     codeTitle: "ReportViewModel.kt",
     codeSnippet: [
@@ -221,15 +221,15 @@ export const projects = [
     screens: [
       {
         label: "1. Capture & Geo-Tagging",
-        caption: "Pengambilan foto bukti langsung dari kamera disertai penguncian koordinat GPS otomatis.",
+        caption: "Evidence photos taken straight from the camera with automatic GPS coordinate locking.",
       },
       {
         label: "2. Smart Upload Queue",
-        caption: "Kompresi ukuran gambar otomatis dan indikator status pengiriman ke server pusat.",
+        caption: "Automatic image size compression and an upload status indicator for the central server.",
       },
       {
-        label: "3. Riwayat & Status Laporan",
-        caption: "Daftar laporan yang sudah terkirim beserta waktu, lokasi, dan status verifikasi.",
+        label: "3. Report History & Status",
+        caption: "A list of submitted reports with time, location, and verification status.",
       },
     ],
   },

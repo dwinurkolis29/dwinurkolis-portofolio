@@ -2,15 +2,23 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Window } from "@/components/window";
-import { runCommand, type TerminalContext } from "./commands";
+import { runCommand, type TerminalContext, type TerminalStrings } from "./commands";
 
 type Entry = { id: number; input: string; lines: string[] };
 
 const MAX_ENTRIES = 8;
 
-export function AskTerminal({ context }: { context: TerminalContext }) {
+export function AskTerminal({
+  context,
+  strings,
+  lang,
+}: {
+  context: TerminalContext;
+  strings: TerminalStrings;
+  lang: string;
+}) {
   const [history, setHistory] = useState<Entry[]>(() => [
-    { id: 0, input: "help", lines: runCommand("help", context).lines },
+    { id: 0, input: "help", lines: runCommand("help", context, strings, lang).lines },
   ]);
   const [value, setValue] = useState("");
   const nextId = useRef(1);
@@ -26,7 +34,7 @@ export function AskTerminal({ context }: { context: TerminalContext }) {
     const input = value.trim();
     setValue("");
     if (!input) return;
-    const result = runCommand(input, context);
+    const result = runCommand(input, context, strings, lang);
     if (result.clear) {
       setHistory([]);
       return;
@@ -36,7 +44,7 @@ export function AskTerminal({ context }: { context: TerminalContext }) {
   }
 
   return (
-    <Window title="ask_dwi" className="mt-6 max-w-md">
+    <Window title={strings.windowTitle} className="mt-6 max-w-md">
       <div
         ref={outputRef}
         aria-live="polite"
@@ -58,8 +66,8 @@ export function AskTerminal({ context }: { context: TerminalContext }) {
           &gt;
         </span>
         <input
-          aria-label="Terminal command"
-          placeholder="type help"
+          aria-label={strings.inputLabel}
+          placeholder={strings.placeholder}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           autoComplete="off"

@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
 import { StoreBadge } from "@/components/store-badge";
+import { localePath, type Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/dictionaries";
+import { format } from "@/i18n/format";
 import { ProjectDiagramWindow } from "./project-diagram";
 import type { Project } from "@/lib/profile-data";
 
@@ -27,9 +30,15 @@ function CubeIcon() {
 
 export function ProjectShowcase({
   projects,
+  lang,
+  t,
+  storeLabel,
   showAllLink = true,
 }: {
   projects: ProjectItem[];
+  lang: Locale;
+  t: Dictionary["showcase"];
+  storeLabel: string;
   showAllLink?: boolean;
 }) {
   return (
@@ -57,7 +66,7 @@ export function ProjectShowcase({
                     </div>
 
                     <Link
-                      href={`/projects/${p.slug}`}
+                      href={localePath(lang, `/projects/${p.slug}`)}
                       className="block font-mono text-xl font-bold leading-tight text-foreground transition-colors duration-300 group-hover:text-accent sm:text-2xl md:text-3xl"
                     >
                       {p.headlineTitle}
@@ -84,18 +93,22 @@ export function ProjectShowcase({
                   {/* View Project Button */}
                   <div className="flex flex-wrap items-center gap-3 pt-1 font-mono text-xs">
                     <Link
-                      href={`/projects/${p.slug}`}
+                      href={localePath(lang, `/projects/${p.slug}`)}
                       className="inline-flex items-center gap-2 rounded-md border border-border bg-[#0b0f14] px-5 py-3 font-medium text-foreground transition-all hover:border-accent hover:bg-surface hover:text-accent"
                     >
-                      <span>&gt; View Project_</span>
+                      <span>{t.viewProject}</span>
                     </Link>
-                    <StoreBadge url={p.storeUrl} />
+                    <StoreBadge url={p.storeUrl} label={storeLabel} />
                   </div>
                 </div>
 
                 {/* Visual Diagram Window Column */}
                 <div className={`relative group/image ${reverse ? "lg:order-1" : "lg:order-2"}`}>
-                  <Link href={`/projects/${p.slug}`} className="block" aria-label={`View ${p.name}`}>
+                  <Link
+                    href={localePath(lang, `/projects/${p.slug}`)}
+                    className="block"
+                    aria-label={format(t.viewAria, { name: p.name })}
+                  >
                     <ProjectDiagramWindow title={p.name} architecture={p.architecture} index={idx} />
                   </Link>
                 </div>
@@ -108,10 +121,10 @@ export function ProjectShowcase({
       {showAllLink && (
         <div className="flex justify-center pt-4">
           <Link
-            href="/projects"
+            href={localePath(lang, "/projects")}
             className="group inline-flex items-center gap-2 font-mono text-sm text-muted transition-colors hover:text-accent"
           >
-            <span>./view_all_explored_projects</span>
+            <span>{t.viewAll}</span>
             <span className="transition-transform group-hover:translate-x-1">→</span>
           </Link>
         </div>

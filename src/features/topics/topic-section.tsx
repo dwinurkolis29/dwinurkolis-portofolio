@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
+import { localePath, type Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/dictionaries";
+import { format } from "@/i18n/format";
 import { ScrollHeadline } from "./scroll-headline";
 
 const iconProps = {
@@ -41,40 +44,32 @@ function ChartIcon() {
   );
 }
 
-const topics = [
-  {
-    label: "01 / MOBILE",
-    title: "Mobile Engineering",
-    description: "Native Android & Flutter apps in production.",
-    href: "#projects",
-    Icon: PhoneIcon,
-  },
-  {
-    label: "02 / SECURITY",
-    title: "Mobile Security",
-    description: "Reverse engineering and app security assessments.",
-    href: "/projects/android-security-research",
-    Icon: ShieldIcon,
-  },
-  {
-    label: "03 / DATA",
-    title: "Data Science",
-    description: "Master's research on predicting broiler FCR.",
-    href: "#research",
-    Icon: ChartIcon,
-  },
+// Urutan sama dengan `topics.items` pada kamus.
+const topicTargets = [
+  { href: "#projects", Icon: PhoneIcon },
+  { href: "/projects/android-security-research", Icon: ShieldIcon },
+  { href: "#research", Icon: ChartIcon },
 ];
 
-export function TopicSection({ hasResearch }: { hasResearch: boolean }) {
+export function TopicSection({
+  hasResearch,
+  lang,
+  t,
+}: {
+  hasResearch: boolean;
+  lang: Locale;
+  t: Dictionary["topics"];
+}) {
+  const topics = t.items.map((item, i) => ({ ...item, ...topicTargets[i] }));
   return (
-    <section aria-label="Focus areas" className="py-16">
-      <ScrollHeadline text="FROM MOBILE TO MODELS" />
+    <section aria-label={t.ariaLabel} className="py-16">
+      <ScrollHeadline text={t.headline} />
 
       <p className="mt-8 font-mono text-xs uppercase tracking-widest text-accent">
-        [ SYSTEM_LOG: MOBILE_TO_DATA ]
+        {t.log}
       </p>
       <p className="mt-3 max-w-2xl font-mono text-sm leading-relaxed text-muted">
-        {"// How I move from shipping secure Android apps to building models that learn from the data those apps collect."}
+        {t.intro}
       </p>
 
       <Reveal className="mt-10">
@@ -97,12 +92,12 @@ export function TopicSection({ hasResearch }: { hasResearch: boolean }) {
                   </h3>
                   <p className="text-sm leading-relaxed text-muted">{description}</p>
                   {href.startsWith("#") ? (
-                    <a href={href} aria-label={`Explore ${title}`} className={linkClass}>
-                      &gt; EXPLORE_
+                    <a href={href} aria-label={format(t.exploreAria, { title })} className={linkClass}>
+                      {t.explore}
                     </a>
                   ) : (
-                    <Link href={href} aria-label={`Explore ${title}`} className={linkClass}>
-                      &gt; EXPLORE_
+                    <Link href={localePath(lang, href)} aria-label={format(t.exploreAria, { title })} className={linkClass}>
+                      {t.explore}
                     </Link>
                   )}
                 </div>
