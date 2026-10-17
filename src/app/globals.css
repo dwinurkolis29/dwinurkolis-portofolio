@@ -25,9 +25,15 @@
 
 html {
   scroll-behavior: smooth;
+  /* With html clipping too, body's clip stays on body instead of propagating
+     to the viewport, so overflow can't widen the mobile layout viewport. */
+  overflow-x: clip;
 }
 
 body {
+  /* Rotating/translated decorations (orbit ring, headline) must never add
+     horizontal scroll; `clip` keeps sticky headers working, unlike `hidden`. */
+  overflow-x: clip;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
@@ -121,6 +127,26 @@ body {
   translate: 0 24px;
 }
 
+/* Site-wide topographic contour lines (public/contour.svg is a seamless tile),
+   kept faint and faded toward the edges so text stays readable. */
+@keyframes contour-drift {
+  to {
+    background-position: 1200px 900px;
+  }
+}
+
+.contour-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+  background-image: url("/contour.svg");
+  background-size: 1200px 900px;
+  opacity: 0.12;
+  mask-image: radial-gradient(ellipse 120% 90% at 50% 30%, black 35%, transparent 85%);
+  animation: contour-drift 240s linear infinite;
+}
+
 /* Diagram connectors: dashes in currentColor that flow along the line. */
 @keyframes flow-x {
   to {
@@ -148,6 +174,7 @@ body {
   .float,
   .orbit,
   .orbit-upright,
+  .contour-bg,
   .flow-line-h,
   .flow-line-v {
     animation: none;

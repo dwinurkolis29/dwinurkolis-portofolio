@@ -54,7 +54,7 @@ export default async function ProjectDetailPage({
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
       {/* Top Navbar */}
       <header className="sticky top-3 z-20 px-4">
         <nav
@@ -64,7 +64,7 @@ export default async function ProjectDetailPage({
           <Link href="/" className="shrink-0 font-mono text-sm text-accent">
             nurkolis<span className="text-muted">.dev</span>
           </Link>
-          <ul className="flex items-center gap-x-5 font-mono text-xs text-muted">
+          <ul className="flex min-w-0 items-center gap-x-5 overflow-x-auto font-mono text-xs text-muted [scrollbar-width:none] [&>li]:shrink-0">
             <li>
               <Link href="/" className="hover:text-foreground">
                 Home
