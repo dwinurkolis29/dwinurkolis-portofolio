@@ -103,10 +103,9 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                 {t.statusLabels[profile.status] ?? profile.status}
               </span>
             </p>
-            <h1 className="mt-5 font-mono text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-6xl">
-              {t.hero.greeting}
-              <br />
-              <Typewriter text="Kolis" className="text-accent" />
+            <h1 className="mt-5 font-mono text-4xl font-bold leading-tight tracking-tight text-foreground sm:whitespace-nowrap sm:text-5xl lg:text-[2.5rem] xl:text-[2.6rem]">
+              {t.hero.greeting} <br className="sm:hidden" />
+              <Typewriter text="Nurkolis" className="text-accent" />
               <span className="cursor text-accent">_</span>
             </h1>
             <p className="mt-5 text-base leading-relaxed text-muted sm:text-lg">
