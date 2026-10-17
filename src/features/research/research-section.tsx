@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Reveal } from "@/components/motion/reveal";
 import { StoreBadge } from "@/components/store-badge";
 import { Window } from "@/components/window";
 import type { Project } from "@/lib/profile-data";
@@ -129,7 +130,9 @@ export function ResearchSection({
   return (
     <div className="space-y-6">
       {research.map((item) => (
-        <ResearchCard key={item.slug} item={item} projects={projects} />
+        <Reveal key={item.slug}>
+          <ResearchCard item={item} projects={projects} />
+        </Reveal>
       ))}
     </div>
   );

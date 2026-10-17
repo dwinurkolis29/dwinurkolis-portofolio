@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Reveal } from "@/components/motion/reveal";
 import { StoreBadge } from "@/components/store-badge";
 import type { Project } from "@/lib/profile-data";
 
@@ -193,70 +194,71 @@ export function ProjectShowcase({
       {projects.map((p, idx) => {
         const reverse = idx % 2 === 1;
         return (
-          <article
-            key={p.slug}
-            className="group relative rounded-xl border border-border bg-surface/80 p-5 backdrop-blur-md transition-all duration-500 hover:border-accent/40 sm:p-7 lg:p-8"
-          >
-            {/* Subtle hover glow matching eltrovert.com */}
-            <div className="pointer-events-none absolute inset-0 rounded-xl bg-accent/5 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
+          <Reveal key={p.slug}>
+            <article
+              className="group relative rounded-xl border border-border bg-surface/80 p-5 backdrop-blur-md transition-all duration-500 hover:border-accent/40 sm:p-7 lg:p-8"
+            >
+              {/* Subtle hover glow matching eltrovert.com */}
+              <div className="pointer-events-none absolute inset-0 rounded-xl bg-accent/5 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
 
-            <div className="relative z-10 grid grid-cols-1 items-center gap-6 sm:gap-8 lg:grid-cols-2">
-              {/* Text Column */}
-              <div className={`space-y-4 sm:space-y-5 ${reverse ? "lg:order-2" : "lg:order-1"}`}>
-                <div className="space-y-2">
-                  <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
-                    <span className="text-accent">{p.name}</span>
-                    <span className="text-muted">·</span>
-                    <span className="text-muted">{p.year}</span>
-                    <span className="text-muted">·</span>
-                    <span className="text-accent-2">{p.category}</span>
+              <div className="relative z-10 grid grid-cols-1 items-center gap-6 sm:gap-8 lg:grid-cols-2">
+                {/* Text Column */}
+                <div className={`space-y-4 sm:space-y-5 ${reverse ? "lg:order-2" : "lg:order-1"}`}>
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
+                      <span className="text-accent">{p.name}</span>
+                      <span className="text-muted">·</span>
+                      <span className="text-muted">{p.year}</span>
+                      <span className="text-muted">·</span>
+                      <span className="text-accent-2">{p.category}</span>
+                    </div>
+
+                    <Link
+                      href={`/projects/${p.slug}`}
+                      className="block font-mono text-xl font-bold leading-tight text-foreground transition-colors duration-300 group-hover:text-accent sm:text-2xl md:text-3xl"
+                    >
+                      {p.headlineTitle}
+                    </Link>
+
+                    <p className="text-sm leading-relaxed text-muted sm:text-base">
+                      {p.description}
+                    </p>
                   </div>
 
-                  <Link
-                    href={`/projects/${p.slug}`}
-                    className="block font-mono text-xl font-bold leading-tight text-foreground transition-colors duration-300 group-hover:text-accent sm:text-2xl md:text-3xl"
-                  >
-                    {p.headlineTitle}
-                  </Link>
+                  {/* Tech Stack Badges with Cube Icon */}
+                  <div className="flex flex-wrap gap-2">
+                    {p.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center gap-1.5 rounded border border-border bg-background/80 px-2.5 py-1 font-mono text-xs text-foreground/85"
+                      >
+                        <CubeIcon />
+                        <span>{tag}</span>
+                      </span>
+                    ))}
+                  </div>
 
-                  <p className="text-sm leading-relaxed text-muted sm:text-base">
-                    {p.description}
-                  </p>
-                </div>
-
-                {/* Tech Stack Badges with Cube Icon */}
-                <div className="flex flex-wrap gap-2">
-                  {p.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center gap-1.5 rounded border border-border bg-background/80 px-2.5 py-1 font-mono text-xs text-foreground/85"
+                  {/* View Project Button */}
+                  <div className="flex flex-wrap items-center gap-3 pt-1 font-mono text-xs">
+                    <Link
+                      href={`/projects/${p.slug}`}
+                      className="inline-flex items-center gap-2 rounded-md border border-border bg-[#0b0f14] px-5 py-3 font-medium text-foreground transition-all hover:border-accent hover:bg-surface hover:text-accent"
                     >
-                      <CubeIcon />
-                      <span>{tag}</span>
-                    </span>
-                  ))}
+                      <span>&gt; View Project_</span>
+                    </Link>
+                    <StoreBadge url={p.storeUrl} />
+                  </div>
                 </div>
 
-                {/* View Project Button */}
-                <div className="flex flex-wrap items-center gap-3 pt-1 font-mono text-xs">
-                  <Link
-                    href={`/projects/${p.slug}`}
-                    className="inline-flex items-center gap-2 rounded-md border border-border bg-[#0b0f14] px-5 py-3 font-medium text-foreground transition-all hover:border-accent hover:bg-surface hover:text-accent"
-                  >
-                    <span>&gt; View Project_</span>
+                {/* Visual Diagram Window Column */}
+                <div className={`relative group/image ${reverse ? "lg:order-1" : "lg:order-2"}`}>
+                  <Link href={`/projects/${p.slug}`} className="block" aria-label={`View ${p.name}`}>
+                    <ProjectDiagramWindow slug={p.slug} title={p.name} />
                   </Link>
-                  <StoreBadge url={p.storeUrl} />
                 </div>
               </div>
-
-              {/* Visual Diagram Window Column */}
-              <div className={`relative group/image ${reverse ? "lg:order-1" : "lg:order-2"}`}>
-                <Link href={`/projects/${p.slug}`} className="block" aria-label={`View ${p.name}`}>
-                  <ProjectDiagramWindow slug={p.slug} title={p.name} />
-                </Link>
-              </div>
-            </div>
-          </article>
+            </article>
+          </Reveal>
         );
       })}
 
